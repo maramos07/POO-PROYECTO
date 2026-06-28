@@ -88,7 +88,7 @@ public class PanelInquilinos extends JPanel {
     private void abrirFormulario() {
         // Campos del formulario
         JTextField fNombre   = campo(); JTextField fCedula  = campo();
-        JTextField fEdad     = campo(); JTextField fFoto    = campo();
+        JTextField fEdad     = campo();
         JTextField fContacto = campo();
         JComboBox<String> cSexo = new JComboBox<>(new String[]{"Masculino", "Femenino", "Otro"});
         JComboBox<Inquilino.TipoRespaldo> cRespaldo =
@@ -99,7 +99,6 @@ public class PanelInquilinos extends JPanel {
                 "Cédula:", fCedula,
                 "Edad:", fEdad,
                 "Sexo:", cSexo,
-                "Fotografía (ruta o descripción):", fFoto,
                 "Medio de contacto (tel/email):", fContacto,
                 "Tipo de respaldo:", cRespaldo
         };
@@ -115,13 +114,12 @@ public class PanelInquilinos extends JPanel {
             String cedula   = req(fCedula,   "Cédula");
             int    edad     = Integer.parseInt(fEdad.getText().trim());
             String sexo     = (String) cSexo.getSelectedItem();
-            String foto     = fFoto.getText().trim();
             String contacto = req(fContacto, "Medio de contacto");
             Inquilino.TipoRespaldo respaldo =
                     (Inquilino.TipoRespaldo) cRespaldo.getSelectedItem();
 
             String id = servicio.registrarInquilino(
-                    nombre, cedula, edad, sexo, foto, contacto, respaldo);
+                    nombre, cedula, edad, sexo, contacto, respaldo);
 
             JOptionPane.showMessageDialog(this,
                     "  Inquilino registrado con ID: " + id,
@@ -145,13 +143,12 @@ public class PanelInquilinos extends JPanel {
                 "¿Eliminar inquilino " + id + "?",
                 "Confirmar", JOptionPane.YES_NO_OPTION);
         if (conf == JOptionPane.YES_OPTION) {
-            servicio.buscarInquilinoPorId(id); // verificar
-            // Usamos el repositorio a través del servicio
-            // No existe método en servicio, pero el repo sí lo tiene,
-            // lo llamamos indirectamente verificando primero
+            servicio.buscarInquilinoPorId(id);
+            servicio.eliminarInquilino(id);
             JOptionPane.showMessageDialog(this,
-                    "Funcionalidad disponible.\n(Conecte al repositorio para persistencia de baja.)",
+                    "Inquilino eliminado correctamente.",
                     "Info", JOptionPane.INFORMATION_MESSAGE);
+            actualizar();
         }
     }
 

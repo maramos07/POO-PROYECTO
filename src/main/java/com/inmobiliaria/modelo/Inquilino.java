@@ -29,19 +29,17 @@ public class Inquilino implements Serializable {
     private String cedula;
     private int edad;
     private String sexo;
-    private String fotografia;       // Ruta o referencia a la fotografía
     private String medioContacto;
     private TipoRespaldo tipoRespaldo;
 
     public Inquilino(String id, String nombre, String cedula, int edad,
-                     String sexo, String fotografia,
+                     String sexo,
                      String medioContacto, TipoRespaldo tipoRespaldo) {
         this.id = id;
         this.nombre = nombre;
         this.cedula = cedula;
         this.edad = edad;
         this.sexo = sexo;
-        this.fotografia = fotografia;
         this.medioContacto = medioContacto;
         this.tipoRespaldo = tipoRespaldo;
     }
@@ -61,9 +59,6 @@ public class Inquilino implements Serializable {
 
     public String getSexo() { return sexo; }
     public void setSexo(String sexo) { this.sexo = sexo; }
-
-    public String getFotografia() { return fotografia; }
-    public void setFotografia(String fotografia) { this.fotografia = fotografia; }
 
     public String getMedioContacto() { return medioContacto; }
     public void setMedioContacto(String medioContacto) { this.medioContacto = medioContacto; }

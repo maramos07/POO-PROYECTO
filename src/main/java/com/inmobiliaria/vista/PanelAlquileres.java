@@ -52,7 +52,7 @@ public class PanelAlquileres extends JPanel {
         tablaAlq.setRowHeight(28);
         tablaAlq.getTableHeader().setFont(VentanaPrincipal.FUENTE_SUBTITULO);
         tablaAlq.getTableHeader().setBackground(VentanaPrincipal.COLOR_PRIMARIO);
-        tablaAlq.getTableHeader().setForeground(Color.WHITE);
+        tablaAlq.getTableHeader().setForeground(VentanaPrincipal.COLOR_ACENTO);
         tablaAlq.setSelectionBackground(new Color(201, 169, 110, 80));
         tablaAlq.setGridColor(new Color(220, 215, 205));
         JScrollPane sp = new JScrollPane(tablaAlq);

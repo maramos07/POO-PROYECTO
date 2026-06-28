@@ -78,11 +78,11 @@ public class InmuebleServicio {
     // ── INQUILINOS ─────────────────────────────────────────────────────────────
 
     public String registrarInquilino(String nombre, String cedula, int edad,
-                                     String sexo, String fotografia, String contacto,
+                                     String sexo, String contacto,
                                      Inquilino.TipoRespaldo respaldo) {
         String id = repo.generarIdInquilino();
         Inquilino inq = new Inquilino(id, nombre, cedula, edad,
-                sexo, fotografia, contacto, respaldo);
+                sexo, contacto, respaldo);
         repo.agregarInquilino(inq);
         return id;
     }
@@ -94,6 +94,8 @@ public class InmuebleServicio {
     public Inquilino buscarInquilinoPorId(String id) {
         return repo.buscarInquilinoPorId(id);
     }
+
+    public boolean eliminarInquilino(String id){ return repo.eliminarInquilino(id);}
 
     // ── ALQUILER / DESALQUILER ─────────────────────────────────────────────────
 
