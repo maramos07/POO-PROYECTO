@@ -174,6 +174,9 @@ public class PanelInmuebles extends JPanel {
         if (confirm == JOptionPane.YES_OPTION) {
             servicio.eliminarInmueble(id);
             cargarTabla(servicio.getTodosInmuebles());
+            JOptionPane.showMessageDialog(this,
+                    "Inmueble eliminado correctamente.",
+                    "Info", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 

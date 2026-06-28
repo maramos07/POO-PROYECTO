@@ -17,6 +17,7 @@ public class RepositorioDatos {
     private static final String ARCHIVO_FACTURAS      = DIR_DATOS + "facturas.dat";
     private static final String ARCHIVO_MOVIMIENTOS   = DIR_DATOS + "movimientos.dat";
     private static final String ARCHIVO_ALQUILERES    = DIR_DATOS + "alquileres.dat";
+    private static final String ARCHIVO_CONTADORES = "contadores.dat";
 
     private static RepositorioDatos instancia;
 
@@ -48,23 +49,33 @@ public class RepositorioDatos {
     // ── Generadores de ID ──────────────────────────────────────────────────────
 
     public String generarIdInmueble() {
-        return String.format("INM-%04d", contadorInmuebles++);
+        String id = String.format("INM-%04d", contadorInmuebles++);
+        guardarContadores();
+        return id;
     }
 
     public String generarIdInquilino() {
-        return String.format("INQ-%04d", contadorInquilinos++);
+        String id = String.format("INQ-%04d", contadorInquilinos++);
+        guardarContadores();
+        return id;
     }
 
     public String generarIdFactura() {
-        return String.format("FAC-%04d", contadorFacturas++);
+        String id = String.format("FAC-%04d", contadorFacturas++);
+        guardarContadores();
+        return id;
     }
 
     public String generarIdMovimiento() {
-        return String.format("MOV-%04d", contadorMovimientos++);
+        String id = String.format("MOV-%04d", contadorMovimientos++);
+        guardarContadores();
+        return id;
     }
 
     public String generarIdAlquiler() {
-        return String.format("ALQ-%04d", contadorAlquileres++);
+        String id = String.format("ALQ-%04d", contadorAlquileres++);
+        guardarContadores();
+        return id;
     }
 
     // ── INMUEBLES ──────────────────────────────────────────────────────────────
@@ -233,6 +244,24 @@ public class RepositorioDatos {
     // ── PERSISTENCIA ───────────────────────────────────────────────────────────
 
     @SuppressWarnings("unchecked")
+    private void cargarContadores(){
+        try(ObjectInputStream ios = new ObjectInputStream(new FileInputStream(ARCHIVO_CONTADORES))){
+            int[] c = (int[]) ios.readObject();
+            contadorInmuebles   = c[0];
+            contadorInquilinos  = c[1];
+            contadorFacturas    = c[2];
+            contadorMovimientos = c[3];
+            contadorAlquileres  = c[4];
+        } catch (Exception ignored) {}
+    }
+
+    private void guardarContadores(){
+        try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(ARCHIVO_CONTADORES))){
+            oos.writeObject(new int[]{contadorInmuebles, contadorInquilinos,
+                    contadorFacturas, contadorMovimientos, contadorAlquileres});
+        }catch(Exception ignored) {}
+    }
+
     private void cargarTodo() {
         inmuebles   = cargarArchivo(ARCHIVO_INMUEBLES,   new HashMap<>());
         inquilinos  = cargarArchivo(ARCHIVO_INQUILINOS,  new HashMap<>());
@@ -240,32 +269,8 @@ public class RepositorioDatos {
         movimientos = cargarArchivo(ARCHIVO_MOVIMIENTOS, new ArrayList<>());
         alquileres  = cargarArchivo(ARCHIVO_ALQUILERES,  new ArrayList<>());
 
-        // Recalcular contadores
-        for (String k : inmuebles.keySet()) {
-            try { int n = Integer.parseInt(k.split("-")[1]);
-                if (n >= contadorInmuebles) contadorInmuebles = n + 1; }
-            catch (Exception ignored) {}
-        }
-        for (String k : inquilinos.keySet()) {
-            try { int n = Integer.parseInt(k.split("-")[1]);
-                if (n >= contadorInquilinos) contadorInquilinos = n + 1; }
-            catch (Exception ignored) {}
-        }
-        for (Factura f : facturas) {
-            try { int n = Integer.parseInt(f.getId().split("-")[1]);
-                if (n >= contadorFacturas) contadorFacturas = n + 1; }
-            catch (Exception ignored) {}
-        }
-        for (MovimientoBancario m : movimientos) {
-            try { int n = Integer.parseInt(m.getId().split("-")[1]);
-                if (n >= contadorMovimientos) contadorMovimientos = n + 1; }
-            catch (Exception ignored) {}
-        }
-        for (Alquiler a : alquileres) {
-            try { int n = Integer.parseInt(a.getId().split("-")[1]);
-                if (n >= contadorAlquileres) contadorAlquileres = n + 1; }
-            catch (Exception ignored) {}
-        }
+        // Carga de contadores
+        cargarContadores();
     }
 
     @SuppressWarnings("unchecked")
