@@ -152,6 +152,15 @@ public class RepositorioDatos {
         return new ArrayList<>(inquilinos.values());
     }
 
+    public boolean existeCedula(String cedula) {
+        for (Inquilino inq : inquilinos.values()) {
+            if (inq.getCedula().equals(cedula)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean tieneAlquileresActivos(String inquilinoId) {
         for (Alquiler a : alquileres) {
             if (a.getInquilinoId().equals(inquilinoId) && a.isActivo()) {

@@ -2,6 +2,7 @@ package com.inmobiliaria.vista;
 
 import com.inmobiliaria.modelo.Inquilino;
 import com.inmobiliaria.servicio.InmuebleServicio;
+import com.inmobiliaria.util.Validador;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -112,6 +113,7 @@ public class PanelInquilinos extends JPanel {
         try {
             String nombre   = req(fNombre,   "Nombre");
             String cedula   = req(fCedula,   "Cédula");
+            Validador.validarCedula(cedula);
             int    edad     = Integer.parseInt(fEdad.getText().trim());
             String sexo     = (String) cSexo.getSelectedItem();
             String contacto = req(fContacto, "Medio de contacto");

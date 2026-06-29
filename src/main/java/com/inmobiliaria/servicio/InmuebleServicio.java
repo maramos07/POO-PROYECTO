@@ -2,6 +2,7 @@ package com.inmobiliaria.servicio;
 
 import com.inmobiliaria.modelo.*;
 import com.inmobiliaria.repositorio.RepositorioDatos;
+import com.inmobiliaria.util.Validador;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -87,6 +88,10 @@ public class InmuebleServicio {
     public String registrarInquilino(String nombre, String cedula, int edad,
                                      String sexo, String contacto,
                                      Inquilino.TipoRespaldo respaldo) {
+        Validador.validarCedula(cedula);
+        if (repo.existeCedula(cedula)) {
+            throw new IllegalArgumentException("Ya existe un inquilino con esa cédula.");
+        }
         String id = repo.generarIdInquilino();
         Inquilino inq = new Inquilino(id, nombre, cedula, edad,
                 sexo, contacto, respaldo);
