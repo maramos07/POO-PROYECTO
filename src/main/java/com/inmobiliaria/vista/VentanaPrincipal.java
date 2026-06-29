@@ -116,8 +116,8 @@ public class VentanaPrincipal extends JFrame {
         tp.setBackground(COLOR_FONDO);
 
         tp.addTab("⌂ Inmuebles",   null, new PanelInmuebles(servicio),   "Gestionar inmuebles");
-        tp.addTab("Inquilinos",  null, new PanelInquilinos(servicio),  "Gestionar inquilinos");
-        tp.addTab("Alquileres",  null, new PanelAlquileres(servicio),  "Alquilar y desalquilar");
+        tp.addTab(" Inquilinos",  null, new PanelInquilinos(servicio),  "Gestionar inquilinos");
+        tp.addTab(" Alquileres",  null, new PanelAlquileres(servicio),  "Alquilar y desalquilar");
         tp.addTab("$ Facturas",    null, new PanelFacturas(servicio),    "Registrar gastos");
         tp.addTab("✎ Movimientos", null, new PanelMovimientos(servicio), "Movimientos bancarios");
 

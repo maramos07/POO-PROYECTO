@@ -8,7 +8,6 @@ import java.io.Serializable;
  * @author Equipo POO
  */
 public class Local extends Inmueble implements Serializable {
-    private static final long serialVersionUID = 1L;
 
     private int numeroPiso;
     private String tipoLocal;         // "Local Comercial", "Oficina"

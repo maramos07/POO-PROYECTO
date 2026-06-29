@@ -23,7 +23,7 @@ public class PanelInmuebles extends JPanel {
     private JLabel lblResultado;
 
     private static final String[] COLUMNAS = {
-            "ID", "Tipo", "Dirección", "Cód. Interno", "Descripción",
+            "ID", "Tipo", "Dirección", "Cód. Calle", "Descripción",
             "Cód. Postal", "Precio Alquiler", "Estado"
     };
 

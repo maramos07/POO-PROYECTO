@@ -9,7 +9,6 @@ import java.time.LocalDate;
  * @author Equipo POO
  */
 public class MovimientoBancario implements Serializable {
-    private static final long serialVersionUID = 1L;
 
     /** Tipos posibles de movimiento bancario. */
     public enum TipoMovimiento {

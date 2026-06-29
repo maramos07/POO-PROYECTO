@@ -8,7 +8,6 @@ import java.io.Serializable;
  * @author Equipo POO
  */
 public class Piso extends Inmueble implements Serializable {
-    private static final long serialVersionUID = 1L;
 
     private int numeroPiso;
     private String tipoEspacio;       // e.g. "Apartamento", "Ático", "Duplex"

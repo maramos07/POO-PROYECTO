@@ -285,6 +285,26 @@ public class InmuebleServicio {
      * Obtiene todos los inquilinos registrados.
      * @return lista completa de inquilinos
      */
+
+    public boolean modificarInquilino(String id, String nombre, String cedula,
+                                      int edad, String sexo, String contacto,
+                                      Inquilino.TipoRespaldo respaldo) {
+        Inquilino inq = repo.buscarInquilinoPorId(id);
+        if (inq == null) return false;
+        inq.setNombre(nombre);
+        inq.setCedula(cedula);
+        inq.setEdad(edad);
+        inq.setSexo(sexo);
+        inq.setMedioContacto(contacto);
+        inq.setTipoRespaldo(respaldo);
+        repo.actualizarInquilino(inq);
+        return true;
+    }
+
+    /**
+     * Obtiene todos los inquilinos registrados.
+     * @return lista completa de inquilinos
+     */
     public List<Inquilino> getTodosInquilinos() {
         return repo.getTodosInquilinos();
     }

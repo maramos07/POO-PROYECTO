@@ -8,7 +8,6 @@ import java.io.Serializable;
  * @author Equipo POO
  */
 public class Inquilino implements Serializable {
-    private static final long serialVersionUID = 1L;
 
     /** Sexos válidos para un inquilino. */
     public enum Sexo {

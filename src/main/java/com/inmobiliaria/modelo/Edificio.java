@@ -9,7 +9,6 @@ import java.io.Serializable;
  * @author Equipo POO
  */
 public class Edificio extends Inmueble implements Serializable {
-    private static final long serialVersionUID = 1L;
 
     private int numeroPisos;
     private String nombreEdificio;

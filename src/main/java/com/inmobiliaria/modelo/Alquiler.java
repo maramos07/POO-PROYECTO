@@ -34,7 +34,7 @@ public class Alquiler implements Serializable {
     }
 
     public void finalizar(LocalDate fechaFin) {
-        if (fechaFin == null || !fechaFin.isAfter(fechaInicio)) {
+        if (fechaFin == null || fechaFin.isBefore(fechaInicio)) {
             throw new IllegalArgumentException("La fecha de fin debe ser posterior a la fecha de inicio.");
         }
         this.fechaFin = fechaFin;

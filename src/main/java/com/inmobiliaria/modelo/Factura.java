@@ -9,7 +9,6 @@ import java.time.LocalDate;
  * @author Equipo POO
  */
 public class Factura implements Serializable {
-    private static final long serialVersionUID = 1L;
 
     /** Conceptos posibles de una factura de gasto. */
     public enum ConceptoFactura {

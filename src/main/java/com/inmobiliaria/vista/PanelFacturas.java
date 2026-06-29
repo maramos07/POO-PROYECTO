@@ -26,7 +26,6 @@ public class PanelFacturas extends JPanel {
     private JTable tabla;
     private JTextField txtFiltroInm, txtDesde, txtHasta;
 
-    private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter FMT_VISTA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private static final String[] COLS = {
@@ -109,17 +108,29 @@ public class PanelFacturas extends JPanel {
         String desde = txtDesde.getText().trim();
         String hasta = txtHasta.getText().trim();
 
-        if (texto.isEmpty()) { cargar(servicio.getTodasFacturas()); return; }
+        // Limpiar el campo de búsqueda luego de filtrar
+        txtFiltroInm.setText("");
+
+        // Si no hay ningún criterio, mostrar todo
+        if (texto.isEmpty() && desde.isEmpty() && hasta.isEmpty()) {
+            cargar(servicio.getTodasFacturas());
+            return;
+        }
 
         try {
             LocalDate d = desde.isEmpty() ? LocalDate.of(2000, 1, 1) : LocalDate.parse(desde, FMT_VISTA);
             LocalDate h = hasta.isEmpty() ? LocalDate.now() : LocalDate.parse(hasta, FMT_VISTA);
 
+            String filtro = texto.toLowerCase(); // normalizar para comparación case-insensitive
+
             List<Factura> resultado = new ArrayList<>();
             List<Inmueble> todos = servicio.getTodosInmuebles();
             for (Inmueble inm : todos) {
-                if (inm.getId().toLowerCase().contains(texto.toLowerCase())
-                        || inm.getDireccion().toLowerCase().contains(texto.toLowerCase())) {
+                // Sin texto filtra solo por fecha; con texto además filtra por ID o dirección
+                boolean coincide = filtro.isEmpty()
+                        || inm.getId().toLowerCase().contains(filtro)
+                        || inm.getDireccion().toLowerCase().contains(filtro);
+                if (coincide) {
                     resultado.addAll(servicio.consultarFacturasPorPeriodo(inm.getId(), d, h));
                 }
             }

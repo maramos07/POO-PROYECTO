@@ -8,6 +8,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,11 +20,12 @@ public class PanelAlquileres extends JPanel {
     private final InmuebleServicio servicio;
     private DefaultTableModel modeloAlq;
     private JTable tablaAlq;
+    private JTextField txtBuscarInquilino;
 
     private static final DateTimeFormatter FMT_VISTA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private static final String[] COLS_ALQ = {
-            "ID Alquiler", "Inquilino ID", "Inmueble ID", "Fecha Inicio", "Fecha Fin", "Estado"
+            "ID Alquiler", "Inquilino", "Inmueble", "Fecha Inicio", "Fecha Fin", "Estado"
     };
 
     public PanelAlquileres(InmuebleServicio servicio) {
@@ -34,7 +36,7 @@ public class PanelAlquileres extends JPanel {
 
         add(titulo(), BorderLayout.NORTH);
         add(crearTabla(), BorderLayout.CENTER);
-        add(botones(), BorderLayout.SOUTH);
+        add(crearPanelSur(),   BorderLayout.SOUTH);
 
         actualizar();
     }
@@ -64,6 +66,38 @@ public class PanelAlquileres extends JPanel {
         return sp;
     }
 
+    private JPanel crearPanelSur() {
+        JPanel sur = new JPanel(new BorderLayout(8, 4));
+        sur.setBackground(VentanaPrincipal.COLOR_FONDO);
+        sur.add(crearPanelBusqueda(), BorderLayout.NORTH);
+        sur.add(botones(),            BorderLayout.SOUTH);
+        return sur;
+    }
+
+    private JPanel crearPanelBusqueda() {
+        JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
+        p.setBackground(VentanaPrincipal.COLOR_FONDO);
+        p.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(new Color(201, 169, 110)),
+                "Buscar alquileres por inquilino"));
+
+        txtBuscarInquilino = SwingUtil.crearTextField(22);
+        txtBuscarInquilino.setToolTipText(
+                "Buscar por nombre, cédula o ID del inquilino (no distingue mayúsculas)");
+
+        JButton btnBuscar  = SwingUtil.crearBoton("Buscar",   VentanaPrincipal.COLOR_SECUNDARIO);
+        JButton btnVerTodos= SwingUtil.crearBoton("Ver Todos", new Color(100, 116, 139));
+
+        btnBuscar.addActionListener(e  -> buscarPorInquilino());
+        btnVerTodos.addActionListener(e -> { actualizar(); txtBuscarInquilino.setText(""); });
+
+        p.add(SwingUtil.crearLabel("Nombre, cédula o ID del inquilino:"));
+        p.add(txtBuscarInquilino);
+        p.add(btnBuscar);
+        p.add(btnVerTodos);
+        return p;
+    }
+
     private JPanel botones() {
         JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 8));
         p.setBackground(VentanaPrincipal.COLOR_FONDO);
@@ -83,8 +117,77 @@ public class PanelAlquileres extends JPanel {
     private void actualizar() {
         modeloAlq.setRowCount(0);
         for (Alquiler a : servicio.getTodosAlquileres()) {
+            Inquilino inq = servicio.buscarInquilinoPorId(a.getInquilinoId());
+            Inmueble  inm = servicio.buscarPorId(a.getInmuebleId());
+
+            String colInq = inq != null
+                    ? a.getInquilinoId() + " — " + inq.getNombre()
+                    : a.getInquilinoId();
+            String colInm = inm != null
+                    ? a.getInmuebleId() + " — " + inm.getDireccion() + " (" + inm.getTipoInmueble() + ")"
+                    : a.getInmuebleId();
+
             modeloAlq.addRow(new Object[]{
-                    a.getId(), a.getInquilinoId(), a.getInmuebleId(),
+                    a.getId(), colInq, colInm,
+                    a.getFechaInicio().format(FMT_VISTA),
+                    a.getFechaFin() != null ? a.getFechaFin().format(FMT_VISTA) : "En curso",
+                    a.isActivo() ? "ACTIVO" : "FINALIZADO"
+            });
+        }
+    }
+
+    /**
+     * Busca alquileres cuyo inquilino coincida con el texto ingresado.
+     * La comparación es case-insensitive y busca coincidencias parciales
+     * en nombre, cédula e ID del inquilino.
+     */
+    private void buscarPorInquilino() {
+        String texto = txtBuscarInquilino.getText().trim().toLowerCase();
+
+        // Limpiar campo tras buscar
+        txtBuscarInquilino.setText("");
+
+        if (texto.isEmpty()) {
+            actualizar();
+            return;
+        }
+
+        List<Alquiler> resultado = new ArrayList<>();
+        for (Alquiler a : servicio.getTodosAlquileres()) {
+            Inquilino inq = servicio.buscarInquilinoPorId(a.getInquilinoId());
+            boolean coincide = a.getInquilinoId().toLowerCase().contains(texto);
+            if (inq != null) {
+                coincide = coincide
+                        || inq.getNombre().toLowerCase().contains(texto)
+                        || inq.getCedula().toLowerCase().contains(texto);
+            }
+            if (coincide) resultado.add(a);
+        }
+
+        cargarEnTabla(resultado);
+
+        if (resultado.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "No se encontraron alquileres para el inquilino buscado.",
+                    "Sin resultados", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    private void cargarEnTabla(List<Alquiler> lista) {
+        modeloAlq.setRowCount(0);
+        for (Alquiler a : lista) {
+            Inquilino inq = servicio.buscarInquilinoPorId(a.getInquilinoId());
+            Inmueble  inm = servicio.buscarPorId(a.getInmuebleId());
+
+            String colInq = inq != null
+                    ? a.getInquilinoId() + " — " + inq.getNombre()
+                    : a.getInquilinoId();
+            String colInm = inm != null
+                    ? a.getInmuebleId() + " — " + inm.getDireccion() + " (" + inm.getTipoInmueble() + ")"
+                    : a.getInmuebleId();
+
+            modeloAlq.addRow(new Object[]{
+                    a.getId(), colInq, colInm,
                     a.getFechaInicio().format(FMT_VISTA),
                     a.getFechaFin() != null ? a.getFechaFin().format(FMT_VISTA) : "En curso",
                     a.isActivo() ? "ACTIVO" : "FINALIZADO"
@@ -106,7 +209,7 @@ public class PanelAlquileres extends JPanel {
 
         String[] opcionesInm = disponibles.stream()
                 .map(i -> i.getId() + " — " + i.getTipoInmueble() +
-                        " | " + i.getDireccion() + " (Cód: " + i.getNumero() + ")" +
+                        " | " + i.getDireccion() +
                         " | $" + String.format("%.0f", i.getPrecioAlquiler()))
                 .toArray(String[]::new);
 
@@ -169,7 +272,7 @@ public class PanelAlquileres extends JPanel {
 
         String[] opciones = ocupados.stream()
                 .map(i -> i.getId() + " — " + i.getDireccion() +
-                        " (Cód: " + i.getNumero() + ")" +
+                        " " + i.getDireccion() +
                         " | Inquilino: " + (i.getInquilinoId() != null ? i.getInquilinoId() : "?"))
                 .toArray(String[]::new);
 

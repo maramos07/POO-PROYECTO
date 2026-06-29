@@ -95,12 +95,14 @@ public class PanelInquilinos extends JPanel {
         p.setBackground(VentanaPrincipal.COLOR_FONDO);
 
         JButton btnNuevo = SwingUtil.crearBoton("＋ Registrar Inquilino", VentanaPrincipal.COLOR_ACENTO);
-        JButton btnElim  = SwingUtil.crearBoton("🗑 Eliminar",             VentanaPrincipal.COLOR_ERROR);
+        JButton btnEditar = SwingUtil.crearBoton("✏ Editar",              VentanaPrincipal.COLOR_SECUNDARIO);
+        JButton btnElim   = SwingUtil.crearBoton("🗑 Eliminar",            VentanaPrincipal.COLOR_ERROR);
 
-        btnNuevo.addActionListener(e -> abrirFormulario());
-        btnElim.addActionListener(e -> eliminar());
+        btnNuevo.addActionListener(e  -> abrirFormulario());
+        btnEditar.addActionListener(e -> editar());
+        btnElim.addActionListener(e   -> eliminar());
 
-        p.add(btnNuevo); p.add(btnElim);
+        p.add(btnNuevo); p.add(btnEditar); p.add(btnElim);
         return p;
     }
 
@@ -159,6 +161,78 @@ public class PanelInquilinos extends JPanel {
                     "  Inquilino registrado con ID: " + id,
                     "Éxito", JOptionPane.INFORMATION_MESSAGE);
             actualizar();
+
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "La edad debe ser un número.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(),
+                    "Campo requerido", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    /**
+     * Abre un formulario pre-rellenado con los datos del inquilino seleccionado
+     * en la tabla y permite modificarlos. Valida los campos antes de persistir
+     * los cambios mediante {@link InmuebleServicio#modificarInquilino}.
+     */
+
+    private void editar() {
+        int fila = tabla.getSelectedRow();
+        if (fila < 0) { SwingUtil.mostrarAviso(this, "Seleccione un inquilino para editar."); return; }
+
+        String id = (String) modelo.getValueAt(fila, 0);
+        Inquilino inq = servicio.buscarInquilinoPorId(id);
+        if (inq == null) { SwingUtil.mostrarAviso(this, "No se encontró el inquilino."); return; }
+
+        // Pre-rellenar el formulario con los datos actuales
+        JTextField fNombre   = SwingUtil.crearTextField(20); fNombre.setText(inq.getNombre());
+        JTextField fCedula   = SwingUtil.crearTextField(20); fCedula.setText(inq.getCedula());
+        JTextField fEdad     = SwingUtil.crearTextField(20); fEdad.setText(String.valueOf(inq.getEdad()));
+        JTextField fContacto = SwingUtil.crearTextField(20); fContacto.setText(inq.getMedioContacto());
+
+        JComboBox<Inquilino.Sexo> cSexo = new JComboBox<>(Inquilino.Sexo.values());
+        for (Inquilino.Sexo s : Inquilino.Sexo.values()) {
+            if (s.getDescripcion().equals(inq.getSexo())) { cSexo.setSelectedItem(s); break; }
+        }
+
+        JComboBox<Inquilino.TipoRespaldo> cRespaldo = new JComboBox<>(Inquilino.TipoRespaldo.values());
+        cRespaldo.setSelectedItem(inq.getTipoRespaldo());
+
+        Object[] campos = {
+                "Nombre completo:", fNombre,
+                "Cédula:", fCedula,
+                "Edad:", fEdad,
+                "Sexo:", cSexo,
+                "Medio de contacto (tel/email):", fContacto,
+                "Tipo de respaldo:", cRespaldo
+        };
+
+        int res = JOptionPane.showConfirmDialog(this, campos,
+                "Editar Inquilino — " + id, JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE);
+        if (res != JOptionPane.OK_OPTION) return;
+
+        try {
+            String nombre   = req(fNombre,   "Nombre");
+            String cedula   = req(fCedula,   "Cédula");
+            Validador.validarCedula(cedula);
+            int    edad     = Integer.parseInt(fEdad.getText().trim());
+            Validador.validarEdad(edad);
+            String sexo     = ((Inquilino.Sexo) cSexo.getSelectedItem()).getDescripcion();
+            String contacto = req(fContacto, "Medio de contacto");
+            Validador.validarContacto(contacto);
+            Inquilino.TipoRespaldo respaldo = (Inquilino.TipoRespaldo) cRespaldo.getSelectedItem();
+
+            boolean ok = servicio.modificarInquilino(id, nombre, cedula, edad, sexo, contacto, respaldo);
+            if (ok) {
+                JOptionPane.showMessageDialog(this, "Inquilino actualizado correctamente.",
+                        "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                actualizar();
+            } else {
+                JOptionPane.showMessageDialog(this, "No se pudo actualizar el inquilino.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
 
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "La edad debe ser un número.",

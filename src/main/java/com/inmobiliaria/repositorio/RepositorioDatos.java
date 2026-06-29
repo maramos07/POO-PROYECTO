@@ -21,7 +21,7 @@ public class RepositorioDatos {
     private static final String ARCHIVO_FACTURAS      = DIR_DATOS + "facturas.dat";
     private static final String ARCHIVO_MOVIMIENTOS   = DIR_DATOS + "movimientos.dat";
     private static final String ARCHIVO_ALQUILERES    = DIR_DATOS + "alquileres.dat";
-    private static final String ARCHIVO_CONTADORES = "contadores.dat";
+    private static final String ARCHIVO_CONTADORES = DIR_DATOS + "contadores.dat";
 
     private static RepositorioDatos instancia;
 
@@ -172,17 +172,7 @@ public class RepositorioDatos {
         return new ArrayList<>(inmuebles.values());
     }
 
-    /**
-     * Obtiene los inmuebles marcados como disponibles.
-     * @return lista de inmuebles disponibles
-     */
-    public List<Inmueble> getInmueblesDisponibles() {
-        List<Inmueble> result = new ArrayList<>();
-        for (Inmueble inm : inmuebles.values()) {
-            if (inm.isDisponible()) result.add(inm);
-        }
-        return result;
-    }
+
 
     // ── INQUILINOS ─────────────────────────────────────────────────────────────
 
@@ -271,16 +261,7 @@ public class RepositorioDatos {
         guardarFacturas();
     }
 
-    /**
-     * Elimina una factura por su ID y persiste los cambios.
-     * @param id identificador de la factura
-     * @return true si se eliminó correctamente, false si no existía
-     */
-    public boolean eliminarFactura(String id) {
-        boolean eliminado = facturas.removeIf(f -> f.getId().equals(id));
-        if (eliminado) guardarFacturas();
-        return eliminado;
-    }
+
 
     /**
      * Obtiene las facturas asociadas a un inmueble.
@@ -454,8 +435,22 @@ public class RepositorioDatos {
     // ── PERSISTENCIA ───────────────────────────────────────────────────────────
 
     @SuppressWarnings("unchecked")
-    private void cargarContadores(){
-        try(ObjectInputStream ios = new ObjectInputStream(new FileInputStream(ARCHIVO_CONTADORES))){
+    private void cargarContadores() {
+        File archivo = new File(ARCHIVO_CONTADORES);
+
+        // Si el archivo no existe (sistema nuevo o carpeta borrada) → iniciar en 1
+        if (!archivo.exists()) {
+            contadorInmuebles   = 1;
+            contadorInquilinos  = 1;
+            contadorFacturas    = 1;
+            contadorMovimientos = 1;
+            contadorAlquileres  = 1;
+            guardarContadores(); // crear el archivo desde cero
+            return;
+        }
+
+        // El archivo existe → cargar los valores persistidos
+        try (ObjectInputStream ios = new ObjectInputStream(new FileInputStream(archivo))) {
             int[] c = (int[]) ios.readObject();
             contadorInmuebles   = c[0];
             contadorInquilinos  = c[1];
@@ -463,8 +458,14 @@ public class RepositorioDatos {
             contadorMovimientos = c[3];
             contadorAlquileres  = c[4];
         } catch (Exception e) {
+            // El archivo existe pero está corrupto → reiniciar contadores
+            contadorInmuebles   = 1;
+            contadorInquilinos  = 1;
+            contadorFacturas    = 1;
+            contadorMovimientos = 1;
+            contadorAlquileres  = 1;
             huboErrorCarga = true;
-            LOG.warning("No se pudieron cargar los contadores: " + e.getMessage());
+            LOG.warning("Contadores corruptos, se reiniciaron: " + e.getMessage());
         }
     }
 

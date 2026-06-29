@@ -27,7 +27,6 @@ public class PanelMovimientos extends JPanel {
     private JTable tabla;
     private JTextField txtFiltroInm, txtDesde, txtHasta;
 
-    private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter FMT_VISTA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private static final String[] COLS = {
@@ -68,7 +67,7 @@ public class PanelMovimientos extends JPanel {
         tabla.setSelectionBackground(new Color(201, 169, 110, 80));
         tabla.setGridColor(new Color(220, 215, 205));
 
-        // Colorear por tipo: ingresos = verde, gastos = rojo
+        // Colorear por tipo: ingresos = beige, gastos = azul
         tabla.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable t, Object val,
@@ -99,8 +98,7 @@ public class PanelMovimientos extends JPanel {
 
         txtFiltroInm = SwingUtil.crearTextField(12); txtDesde = SwingUtil.crearTextField(10); txtHasta = SwingUtil.crearTextField(10);
 
-        JButton btnFiltrar = SwingUtil.crearBoton(" Filtrar por Inmueble y Período",
-                VentanaPrincipal.COLOR_SECUNDARIO);
+        JButton btnFiltrar = SwingUtil.crearBoton(" Filtrar por Inmueble y Período", VentanaPrincipal.COLOR_SECUNDARIO);
         JButton btnTodos   = SwingUtil.crearBoton("Ver Todos", new Color(100, 116, 139));
 
         btnFiltrar.addActionListener(e -> filtrar());
@@ -136,27 +134,37 @@ public class PanelMovimientos extends JPanel {
 
     private void filtrar() {
         String texto = txtFiltroInm.getText().trim();
-        if (texto.isEmpty()) { cargar(servicio.getTodosMovimientos()); return; }
+        String desde = txtDesde.getText().trim();
+        String hasta = txtHasta.getText().trim();
+
+        // Limpiar el campo de búsqueda luego de filtrar
+        txtFiltroInm.setText("");
+
+        // Sin ningún criterio, mostrar todo
+        if (texto.isEmpty() && desde.isEmpty() && hasta.isEmpty()) {
+            cargar(servicio.getTodosMovimientos());
+            return;
+        }
+
         try {
-            LocalDate d = txtDesde.getText().trim().isEmpty()
-                    ? LocalDate.of(2000, 1, 1)
-                    : LocalDate.parse(txtDesde.getText().trim(), FMT_VISTA);
-            LocalDate h = txtHasta.getText().trim().isEmpty()
-                    ? LocalDate.now()
-                    : LocalDate.parse(txtHasta.getText().trim(), FMT_VISTA);
+            LocalDate d = desde.isEmpty() ? LocalDate.of(2000, 1, 1) : LocalDate.parse(desde, FMT_VISTA);
+            LocalDate h = hasta.isEmpty() ? LocalDate.now()           : LocalDate.parse(hasta, FMT_VISTA);
+
+            String filtro = texto.toLowerCase();
 
             List<MovimientoBancario> resultado = new ArrayList<>();
-            List<Inmueble> todos = servicio.getTodosInmuebles();
-            for (Inmueble inm : todos) {
-                if (inm.getId().toLowerCase().contains(texto.toLowerCase())
-                        || inm.getDireccion().toLowerCase().contains(texto.toLowerCase())) {
+            for (Inmueble inm : servicio.getTodosInmuebles()) {
+                boolean coincide = filtro.isEmpty()
+                        || inm.getId().toLowerCase().contains(filtro)
+                        || inm.getDireccion().toLowerCase().contains(filtro);
+                if (coincide) {
                     resultado.addAll(servicio.consultarMovimientosPorPeriodo(inm.getId(), d, h));
                 }
             }
             cargar(resultado);
         } catch (DateTimeParseException ex) {
             JOptionPane.showMessageDialog(this,
-                    "Formato de fecha inválido. Use dd/MM/yyyy (ej: 15/01/2024)",
+                    "Formato de fecha inválido \nUse dd/MM/yyyy (ej: 15/01/2024)",
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
