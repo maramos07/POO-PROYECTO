@@ -38,6 +38,8 @@ public class RepositorioDatos {
     private int contadorMovimientos = 1;
     private int contadorAlquileres  = 1;
 
+    private boolean huboErrorCarga = false;
+
     private RepositorioDatos() {
         new File(DIR_DATOS).mkdirs();
         cargarTodo();
@@ -61,7 +63,7 @@ public class RepositorioDatos {
      * @return ID con formato INM-XXXX
      */
     public String generarIdInmueble() {
-        String id = String.format("INM-%04d", contadorInmuebles++);
+        String id = String.format("INM-%05d", contadorInmuebles++);
         guardarContadores();
         return id;
     }
@@ -71,7 +73,7 @@ public class RepositorioDatos {
      * @return ID con formato INQ-XXXX
      */
     public String generarIdInquilino() {
-        String id = String.format("INQ-%04d", contadorInquilinos++);
+        String id = String.format("INQ-%05d", contadorInquilinos++);
         guardarContadores();
         return id;
     }
@@ -81,7 +83,7 @@ public class RepositorioDatos {
      * @return ID con formato FAC-XXXX
      */
     public String generarIdFactura() {
-        String id = String.format("FAC-%04d", contadorFacturas++);
+        String id = String.format("FAC-%05d", contadorFacturas++);
         guardarContadores();
         return id;
     }
@@ -91,7 +93,7 @@ public class RepositorioDatos {
      * @return ID con formato MOV-XXXX
      */
     public String generarIdMovimiento() {
-        String id = String.format("MOV-%04d", contadorMovimientos++);
+        String id = String.format("MOV-%05d", contadorMovimientos++);
         guardarContadores();
         return id;
     }
@@ -101,7 +103,7 @@ public class RepositorioDatos {
      * @return ID con formato ALQ-XXXX
      */
     public String generarIdAlquiler() {
-        String id = String.format("ALQ-%04d", contadorAlquileres++);
+        String id = String.format("ALQ-%05d", contadorAlquileres++);
         guardarContadores();
         return id;
     }
@@ -461,6 +463,7 @@ public class RepositorioDatos {
             contadorMovimientos = c[3];
             contadorAlquileres  = c[4];
         } catch (Exception e) {
+            huboErrorCarga = true;
             LOG.warning("No se pudieron cargar los contadores: " + e.getMessage());
         }
     }
@@ -492,9 +495,18 @@ public class RepositorioDatos {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f))) {
             return (T) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
+            huboErrorCarga = true;
             LOG.warning("No se pudo cargar " + ruta + ": " + e.getMessage());
             return porDefecto;
         }
+    }
+
+    /**
+     * Indica si todos los archivos de datos se cargaron sin errores.
+     * @return true si no hubo errores de carga, false si algún archivo falló
+     */
+    public boolean isDatosCargadosCorrectamente() {
+        return !huboErrorCarga;
     }
 
     private void guardar(String ruta, Object datos) {

@@ -32,6 +32,13 @@ public class VentanaPrincipal extends JFrame {
 
     public VentanaPrincipal() {
         configurarVentana();
+        if (!servicio.isDatosCargadosCorrectamente()) {
+            JOptionPane.showMessageDialog(this,
+                    "Algunos archivos de datos no pudieron cargarse.\n"
+                    + "Los datos pueden estar corruptos o faltar.\n"
+                    + "Revise la carpeta datos/.",
+                    "Advertencia de carga", JOptionPane.WARNING_MESSAGE);
+        }
         JTabbedPane tabbedPane = crearTabbedPane();
         add(crearHeader(), BorderLayout.NORTH);
         add(tabbedPane, BorderLayout.CENTER);
@@ -130,9 +137,4 @@ public class VentanaPrincipal extends JFrame {
             dispose();
             System.exit(0);
         }
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(VentanaPrincipal::new);
-    }
-}
+    }}

@@ -16,6 +16,14 @@ public class InmuebleServicio {
 
     private final RepositorioDatos repo = RepositorioDatos.getInstance();
 
+    /**
+     * Indica si los datos se cargaron correctamente desde los archivos.
+     * @return true si no hubo errores de carga
+     */
+    public boolean isDatosCargadosCorrectamente() {
+        return repo.isDatosCargadosCorrectamente();
+    }
+
     // ── INMUEBLES ──────────────────────────────────────────────────────────────
 
     /**
