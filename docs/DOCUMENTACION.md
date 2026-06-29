@@ -2,7 +2,7 @@
 
 ## 1. Resumen
 
-Aplicación de escritorio en **Java 17 con Swing** para la administración integral de una inmobiliaria. Permite gestionar inmuebles (edificios, pisos y locales), inquilinos, contratos de alquiler, facturas de gastos y movimientos bancarios. La persistencia se maneja mediante archivos serializados (`.dat`) y la arquitectura sigue el patrón de **tres capas**: modelo, servicio/repositorio y vista.
+Aplicación de escritorio en **Java 25 con Swing** para la administración integral de una inmobiliaria. Permite gestionar inmuebles (edificios, pisos y locales), inquilinos, contratos de alquiler, facturas de gastos y movimientos bancarios. La persistencia se maneja mediante archivos serializados (`.dat`) y la arquitectura sigue el patrón de **tres capas**: modelo, servicio/repositorio y vista.
 
 ---
 
