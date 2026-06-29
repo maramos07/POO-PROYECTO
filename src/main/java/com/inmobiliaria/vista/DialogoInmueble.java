@@ -84,7 +84,7 @@ public class DialogoInmueble extends JDialog {
         contenido.add(pTipo);
         contenido.add(Box.createVerticalStrut(6));
         agregarFila(contenido, "Dirección:", txtDireccion);
-        agregarFila(contenido, "Número / ID interno:", txtNumero);
+        agregarFila(contenido, "Código Interno:", txtNumero);
         agregarFila(contenido, "Descripción:", txtDescripcion);
         agregarFila(contenido, "Código Postal:", txtCodPostal);
         agregarFila(contenido, "Precio de Alquiler ($):", txtPrecio);
@@ -142,8 +142,8 @@ public class DialogoInmueble extends JDialog {
         JPanel p = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 8));
         p.setBackground(VentanaPrincipal.COLOR_FONDO);
 
-        JButton btnGuardar = btn("Guardar", VentanaPrincipal.COLOR_ACENTO);
-        JButton btnCancelar = btn("Cancelar", new Color(100, 116, 139));
+        JButton btnGuardar = SwingUtil.crearBoton("Guardar", VentanaPrincipal.COLOR_ACENTO);
+        JButton btnCancelar = SwingUtil.crearBoton("Cancelar", new Color(100, 116, 139));
 
         btnGuardar.addActionListener(e -> guardar());
         btnCancelar.addActionListener(e -> dispose());
@@ -164,8 +164,31 @@ public class DialogoInmueble extends JDialog {
             Validador.validarPositivo(precio, "Precio de Alquiler");
 
             if (inmuebleEditar != null) {
-                // Modo edición: solo actualiza campos modificables
-                servicio.modificarInmueble(inmuebleEditar.getId(), desc, cp, precio);
+                // Modo edición: actualiza todos los campos
+                servicio.modificarInmueble(inmuebleEditar.getId(), dir, num, desc, cp, precio);
+                Inmueble inm = inmuebleEditar;
+                if (inm instanceof Edificio) {
+                    String nombre = txtNombreEdificio.getText().trim();
+                    if (nombre.isBlank()) throw new IllegalArgumentException("El nombre del edificio es obligatorio.");
+                    int pisos = Integer.parseInt(txtNumPisosTotales.getText().trim());
+                    servicio.modificarEdificio(inm.getId(), pisos, nombre);
+                } else if (inm instanceof Piso) {
+                    int nPiso   = Integer.parseInt(txtNumPiso.getText().trim());
+                    String tEsp = txtTipoEspacio.getText().trim();
+                    if (tEsp.isBlank()) throw new IllegalArgumentException("El tipo de espacio es obligatorio.");
+                    String dEsp = txtDescEsp.getText().trim();
+                    if (dEsp.isBlank()) throw new IllegalArgumentException("La descripción específica es obligatoria.");
+                    String edId = txtEdificioId.getText().trim();
+                    servicio.modificarPiso(inm.getId(), nPiso, tEsp, dEsp, edId);
+                } else if (inm instanceof Local) {
+                    int nPiso   = Integer.parseInt(txtNumPiso.getText().trim());
+                    String tLoc = txtTipoEspacio.getText().trim();
+                    if (tLoc.isBlank()) throw new IllegalArgumentException("El tipo de local es obligatorio.");
+                    String dEsp = txtDescEsp.getText().trim();
+                    if (dEsp.isBlank()) throw new IllegalArgumentException("La descripción específica es obligatoria.");
+                    String edId = txtEdificioId.getText().trim();
+                    servicio.modificarLocal(inm.getId(), nPiso, tLoc, dEsp, edId);
+                }
             } else {
                 // Modo nuevo
                 switch (tipo) {
@@ -252,15 +275,4 @@ public class DialogoInmueble extends JDialog {
         parent.add(campo);
     }
 
-    private JButton btn(String texto, Color color) {
-        JButton b = new JButton(texto);
-        b.setFont(VentanaPrincipal.FUENTE_NORMAL);
-        b.setBackground(color);
-        b.setForeground(Color.WHITE);
-        b.setFocusPainted(false);
-        b.setBorderPainted(false);
-        b.setBorder(new EmptyBorder(8, 18, 8, 18));
-        b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        return b;
-    }
 }

@@ -7,6 +7,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -17,6 +18,8 @@ public class PanelAlquileres extends JPanel {
     private final InmuebleServicio servicio;
     private DefaultTableModel modeloAlq;
     private JTable tablaAlq;
+
+    private static final DateTimeFormatter FMT_VISTA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private static final String[] COLS_ALQ = {
             "ID Alquiler", "Inquilino ID", "Inmueble ID", "Fecha Inicio", "Fecha Fin", "Estado"
@@ -64,9 +67,9 @@ public class PanelAlquileres extends JPanel {
         JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 8));
         p.setBackground(VentanaPrincipal.COLOR_FONDO);
 
-        JButton btnAlquilar  = btn("Alquilar Inmueble",    VentanaPrincipal.COLOR_ACENTO);
-        JButton btnDesalq    = btn("Desalquilar Inmueble",  new Color(245, 158, 11));
-        JButton btnActualizar= btn("Actualizar",             new Color(100, 116, 139));
+        JButton btnAlquilar  = SwingUtil.crearBoton("Alquilar Inmueble",    VentanaPrincipal.COLOR_ACENTO);
+        JButton btnDesalq    = SwingUtil.crearBoton("Desalquilar Inmueble",  new Color(245, 158, 11));
+        JButton btnActualizar= SwingUtil.crearBoton("Actualizar",             new Color(100, 116, 139));
 
         btnAlquilar.addActionListener(e  -> alquilar());
         btnDesalq.addActionListener(e    -> desalquilar());
@@ -81,8 +84,8 @@ public class PanelAlquileres extends JPanel {
         for (Alquiler a : servicio.getTodosAlquileres()) {
             modeloAlq.addRow(new Object[]{
                     a.getId(), a.getInquilinoId(), a.getInmuebleId(),
-                    a.getFechaInicio(),
-                    a.getFechaFin() != null ? a.getFechaFin().toString() : "En curso",
+                    a.getFechaInicio().format(FMT_VISTA),
+                    a.getFechaFin() != null ? a.getFechaFin().format(FMT_VISTA) : "En curso",
                     a.isActivo() ? "ACTIVO" : "FINALIZADO"
             });
         }
@@ -102,7 +105,7 @@ public class PanelAlquileres extends JPanel {
 
         String[] opcionesInm = disponibles.stream()
                 .map(i -> i.getId() + " — " + i.getTipoInmueble() +
-                        " | " + i.getDireccion() + " Nº" + i.getNumero() +
+                        " | " + i.getDireccion() + " (Cód: " + i.getNumero() + ")" +
                         " | $" + String.format("%.0f", i.getPrecioAlquiler()))
                 .toArray(String[]::new);
 
@@ -165,7 +168,7 @@ public class PanelAlquileres extends JPanel {
 
         String[] opciones = ocupados.stream()
                 .map(i -> i.getId() + " — " + i.getDireccion() +
-                        " Nº" + i.getNumero() +
+                        " (Cód: " + i.getNumero() + ")" +
                         " | Inquilino: " + (i.getInquilinoId() != null ? i.getInquilinoId() : "?"))
                 .toArray(String[]::new);
 
@@ -191,15 +194,4 @@ public class PanelAlquileres extends JPanel {
         }
     }
 
-    private JButton btn(String texto, Color color) {
-        JButton b = new JButton(texto);
-        b.setFont(VentanaPrincipal.FUENTE_NORMAL);
-        b.setBackground(color);
-        b.setForeground(Color.WHITE);
-        b.setFocusPainted(false);
-        b.setBorderPainted(false);
-        b.setBorder(new EmptyBorder(7, 16, 7, 16));
-        b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        return b;
-    }
 }

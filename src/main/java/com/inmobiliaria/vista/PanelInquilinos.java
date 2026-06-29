@@ -18,6 +18,7 @@ public class PanelInquilinos extends JPanel {
     private final InmuebleServicio servicio;
     private JTable tabla;
     private DefaultTableModel modelo;
+    private JTextField txtBuscar;
 
     private static final String[] COLS = {
             "ID", "Nombre", "Cédula", "Edad", "Sexo", "Contacto", "Respaldo"
@@ -29,19 +30,46 @@ public class PanelInquilinos extends JPanel {
         setBackground(VentanaPrincipal.COLOR_FONDO);
         setBorder(new EmptyBorder(16, 16, 16, 16));
 
-        add(titulo(), BorderLayout.NORTH);
+        add(crearPanelBusqueda(), BorderLayout.NORTH);
         add(crearTabla(), BorderLayout.CENTER);
         add(botones(), BorderLayout.SOUTH);
 
         actualizar();
     }
 
-    private JLabel titulo() {
-        JLabel l = new JLabel(" Gestión de Inquilinos");
-        l.setFont(VentanaPrincipal.FUENTE_SUBTITULO);
-        l.setForeground(VentanaPrincipal.COLOR_PRIMARIO);
-        l.setBorder(new EmptyBorder(0, 0, 8, 0));
-        return l;
+    private JPanel crearPanelBusqueda() {
+        JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 6));
+        p.setBackground(VentanaPrincipal.COLOR_FONDO);
+
+        JLabel lbl = new JLabel(" Buscar por nombre o cédula:");
+        lbl.setFont(VentanaPrincipal.FUENTE_NORMAL);
+
+        txtBuscar = new JTextField(20);
+        txtBuscar.setFont(VentanaPrincipal.FUENTE_NORMAL);
+
+        JButton btnBuscar = SwingUtil.crearBoton("Buscar", VentanaPrincipal.COLOR_SECUNDARIO);
+        btnBuscar.addActionListener(e -> buscar());
+
+        JButton btnTodos = SwingUtil.crearBoton("Ver Todos", new Color(100, 116, 139));
+        btnTodos.addActionListener(e -> actualizar());
+
+        p.add(lbl); p.add(txtBuscar); p.add(btnBuscar); p.add(btnTodos);
+        return p;
+    }
+
+    private void buscar() {
+        String busq = txtBuscar.getText().trim().toLowerCase();
+        modelo.setRowCount(0);
+        for (Inquilino inq : servicio.getTodosInquilinos()) {
+            if (inq.getNombre().toLowerCase().contains(busq)
+                    || inq.getCedula().contains(busq)) {
+                modelo.addRow(new Object[]{
+                        inq.getId(), inq.getNombre(), inq.getCedula(),
+                        inq.getEdad(), inq.getSexo(),
+                        inq.getMedioContacto(), inq.getTipoRespaldo().getDescripcion()
+                });
+            }
+        }
     }
 
     private JScrollPane crearTabla() {
@@ -65,8 +93,8 @@ public class PanelInquilinos extends JPanel {
         JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 8));
         p.setBackground(VentanaPrincipal.COLOR_FONDO);
 
-        JButton btnNuevo = btn("＋ Registrar Inquilino", VentanaPrincipal.COLOR_ACENTO);
-        JButton btnElim  = btn("🗑 Eliminar",             VentanaPrincipal.COLOR_ERROR);
+        JButton btnNuevo = SwingUtil.crearBoton("＋ Registrar Inquilino", VentanaPrincipal.COLOR_ACENTO);
+        JButton btnElim  = SwingUtil.crearBoton("🗑 Eliminar",             VentanaPrincipal.COLOR_ERROR);
 
         btnNuevo.addActionListener(e -> abrirFormulario());
         btnElim.addActionListener(e -> eliminar());
@@ -88,9 +116,9 @@ public class PanelInquilinos extends JPanel {
 
     private void abrirFormulario() {
         // Campos del formulario
-        JTextField fNombre   = campo(); JTextField fCedula  = campo();
-        JTextField fEdad     = campo();
-        JTextField fContacto = campo();
+        JTextField fNombre   = SwingUtil.crearTextField(20); JTextField fCedula  = SwingUtil.crearTextField(20);
+        JTextField fEdad     = SwingUtil.crearTextField(20);
+        JTextField fContacto = SwingUtil.crearTextField(20);
         JComboBox<Inquilino.Sexo> cSexo = new JComboBox<>(Inquilino.Sexo.values());
         JComboBox<Inquilino.TipoRespaldo> cRespaldo =
                 new JComboBox<>(Inquilino.TipoRespaldo.values());
@@ -142,7 +170,7 @@ public class PanelInquilinos extends JPanel {
 
     private void eliminar() {
         int fila = tabla.getSelectedRow();
-        if (fila < 0) { aviso("Seleccione un inquilino."); return; }
+        if (fila < 0) { SwingUtil.mostrarAviso(this, "Seleccione un inquilino."); return; }
         String id = (String) modelo.getValueAt(fila, 0);
         int conf = JOptionPane.showConfirmDialog(this,
                 "¿Eliminar inquilino " + id + "?",
@@ -171,25 +199,4 @@ public class PanelInquilinos extends JPanel {
         return v;
     }
 
-    private JTextField campo() {
-        JTextField tf = new JTextField(20);
-        tf.setFont(VentanaPrincipal.FUENTE_NORMAL);
-        return tf;
-    }
-
-    private JButton btn(String texto, Color color) {
-        JButton b = new JButton(texto);
-        b.setFont(VentanaPrincipal.FUENTE_NORMAL);
-        b.setBackground(color);
-        b.setForeground(Color.WHITE);
-        b.setFocusPainted(false);
-        b.setBorderPainted(false);
-        b.setBorder(new EmptyBorder(7, 16, 7, 16));
-        b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        return b;
-    }
-
-    private void aviso(String msg) {
-        JOptionPane.showMessageDialog(this, msg, "Aviso", JOptionPane.WARNING_MESSAGE);
-    }
 }

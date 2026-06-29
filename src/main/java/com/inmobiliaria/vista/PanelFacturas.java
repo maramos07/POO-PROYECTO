@@ -12,6 +12,7 @@ import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,6 +26,7 @@ public class PanelFacturas extends JPanel {
     private JTextField txtFiltroInm, txtDesde, txtHasta;
 
     private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter FMT_VISTA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private static final String[] COLS = {
             "ID", "Fecha", "Inmueble", "Concepto", "Proveedor", "Costo ($)"
@@ -76,23 +78,23 @@ public class PanelFacturas extends JPanel {
         JPanel filtros = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
         filtros.setBackground(VentanaPrincipal.COLOR_FONDO);
 
-        txtFiltroInm = tf(12); txtDesde = tf(10); txtHasta = tf(10);
+        txtFiltroInm = SwingUtil.crearTextField(12); txtDesde = SwingUtil.crearTextField(10); txtHasta = SwingUtil.crearTextField(10);
 
-        JButton btnFiltrar = btn(" Filtrar", VentanaPrincipal.COLOR_SECUNDARIO);
-        JButton btnTodas   = btn("Ver Todas",  new Color(100, 116, 139));
+        JButton btnFiltrar = SwingUtil.crearBoton(" Filtrar", VentanaPrincipal.COLOR_SECUNDARIO);
+        JButton btnTodas   = SwingUtil.crearBoton("Ver Todas",  new Color(100, 116, 139));
 
         btnFiltrar.addActionListener(e -> filtrar());
         btnTodas.addActionListener(e -> cargar(servicio.getTodasFacturas()));
 
-        filtros.add(lbl("ID Inmueble:")); filtros.add(txtFiltroInm);
-        filtros.add(lbl("Desde (yyyy-MM-dd):")); filtros.add(txtDesde);
-        filtros.add(lbl("Hasta:")); filtros.add(txtHasta);
+        filtros.add(SwingUtil.crearLabel("Inmueble (ID o dirección):")); filtros.add(txtFiltroInm);
+        filtros.add(SwingUtil.crearLabel("Desde (dd/MM/yyyy):")); filtros.add(txtDesde);
+        filtros.add(SwingUtil.crearLabel("Hasta (dd/MM/yyyy):")); filtros.add(txtHasta);
         filtros.add(btnFiltrar); filtros.add(btnTodas);
 
         // Botones
         JPanel bots = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
         bots.setBackground(VentanaPrincipal.COLOR_FONDO);
-        JButton btnNueva = btn("＋ Registrar Factura", VentanaPrincipal.COLOR_ACENTO);
+        JButton btnNueva = SwingUtil.crearBoton("＋ Registrar Factura", VentanaPrincipal.COLOR_ACENTO);
         btnNueva.addActionListener(e -> registrar());
         bots.add(btnNueva);
 
@@ -102,19 +104,28 @@ public class PanelFacturas extends JPanel {
     }
 
     private void filtrar() {
-        String idInm = txtFiltroInm.getText().trim();
+        String texto = txtFiltroInm.getText().trim();
         String desde = txtDesde.getText().trim();
         String hasta = txtHasta.getText().trim();
 
-        if (idInm.isEmpty()) { cargar(servicio.getTodasFacturas()); return; }
+        if (texto.isEmpty()) { cargar(servicio.getTodasFacturas()); return; }
 
         try {
-            LocalDate d = desde.isEmpty() ? LocalDate.of(2000, 1, 1) : LocalDate.parse(desde, FMT);
-            LocalDate h = hasta.isEmpty() ? LocalDate.now() : LocalDate.parse(hasta, FMT);
-            cargar(servicio.consultarFacturasPorPeriodo(idInm, d, h));
+            LocalDate d = desde.isEmpty() ? LocalDate.of(2000, 1, 1) : LocalDate.parse(desde, FMT_VISTA);
+            LocalDate h = hasta.isEmpty() ? LocalDate.now() : LocalDate.parse(hasta, FMT_VISTA);
+
+            List<Factura> resultado = new ArrayList<>();
+            List<Inmueble> todos = servicio.getTodosInmuebles();
+            for (Inmueble inm : todos) {
+                if (inm.getId().toLowerCase().contains(texto.toLowerCase())
+                        || inm.getDireccion().toLowerCase().contains(texto.toLowerCase())) {
+                    resultado.addAll(servicio.consultarFacturasPorPeriodo(inm.getId(), d, h));
+                }
+            }
+            cargar(resultado);
         } catch (DateTimeParseException ex) {
             JOptionPane.showMessageDialog(this,
-                    "Formato de fecha inválido. Use yyyy-MM-dd (ej: 2024-01-15)",
+                    "Formato de fecha inválido. Use dd/MM/yyyy (ej: 15/01/2024)",
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -134,16 +145,16 @@ public class PanelFacturas extends JPanel {
         JComboBox<String> cmbInm   = new JComboBox<>(opInm);
         JComboBox<Factura.ConceptoFactura> cmbConc =
                 new JComboBox<>(Factura.ConceptoFactura.values());
-        JTextField tfFecha    = tf(12); tfFecha.setText(LocalDate.now().format(FMT));
-        JTextField tfProv     = tf(20);
-        JTextField tfCosto    = tf(12);
+        JTextField tfFecha    = SwingUtil.crearTextField(12); tfFecha.setText(LocalDate.now().format(FMT_VISTA));
+        JTextField tfProv     = SwingUtil.crearTextField(20);
+        JTextField tfCosto    = SwingUtil.crearTextField(12);
 
         cmbInm.setFont(VentanaPrincipal.FUENTE_NORMAL);
         cmbConc.setFont(VentanaPrincipal.FUENTE_NORMAL);
 
         Object[] form = {
                 "Inmueble:", cmbInm,
-                "Fecha (yyyy-MM-dd):", tfFecha,
+                "Fecha (dd/MM/yyyy):", tfFecha,
                 "Concepto:", cmbConc,
                 "Proveedor / Compañía:", tfProv,
                 "Costo ($):", tfCosto
@@ -155,7 +166,7 @@ public class PanelFacturas extends JPanel {
 
         try {
             String idInm   = inmuebles.get(cmbInm.getSelectedIndex()).getId();
-            LocalDate fecha = LocalDate.parse(tfFecha.getText().trim(), FMT);
+            LocalDate fecha = LocalDate.parse(tfFecha.getText().trim(), FMT_VISTA);
             Factura.ConceptoFactura conc = (Factura.ConceptoFactura) cmbConc.getSelectedItem();
             String prov    = tfProv.getText().trim();
             if (prov.isBlank()) throw new IllegalArgumentException("El proveedor es obligatorio.");
@@ -174,7 +185,7 @@ public class PanelFacturas extends JPanel {
                     "Error de formato", JOptionPane.ERROR_MESSAGE);
         } catch (DateTimeParseException ex) {
             JOptionPane.showMessageDialog(this,
-                    "Formato de fecha inválido. Use yyyy-MM-dd (ej: 2024-01-15).",
+                    "Formato de fecha inválido. Use dd/MM/yyyy (ej: 15/01/2024).",
                     "Error de fecha", JOptionPane.ERROR_MESSAGE);
         } catch (IllegalArgumentException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(),
@@ -186,34 +197,11 @@ public class PanelFacturas extends JPanel {
         modelo.setRowCount(0);
         for (Factura f : lista) {
             modelo.addRow(new Object[]{
-                    f.getId(), f.getFechaEmision(), f.getInmuebleId(),
+                    f.getId(), f.getFechaEmision().format(FMT_VISTA), f.getInmuebleId(),
                     f.getConcepto().getDescripcion(), f.getProveedor(),
                     String.format("%.2f", f.getCosto())
             });
         }
     }
 
-    private JTextField tf(int cols) {
-        JTextField t = new JTextField(cols);
-        t.setFont(VentanaPrincipal.FUENTE_NORMAL);
-        return t;
-    }
-
-    private JLabel lbl(String txt) {
-        JLabel l = new JLabel(txt);
-        l.setFont(VentanaPrincipal.FUENTE_NORMAL);
-        return l;
-    }
-
-    private JButton btn(String txt, Color c) {
-        JButton b = new JButton(txt);
-        b.setFont(VentanaPrincipal.FUENTE_NORMAL);
-        b.setBackground(c);
-        b.setForeground(Color.WHITE);
-        b.setFocusPainted(false);
-        b.setBorderPainted(false);
-        b.setBorder(new EmptyBorder(7, 14, 7, 14));
-        b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        return b;
-    }
 }

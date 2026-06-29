@@ -186,7 +186,7 @@ public class RepositorioDatos {
     public List<Factura> getFacturasPorInmueble(String inmuebleId) {
         List<Factura> resultado = new ArrayList<>();
         for (Factura f : facturas) {
-            if (f.getInmuebleId().equals(inmuebleId)) resultado.add(f);
+            if (f.getInmuebleId().toLowerCase().contains(inmuebleId.toLowerCase())) resultado.add(f);
         }
         return resultado;
     }
@@ -197,7 +197,7 @@ public class RepositorioDatos {
             java.time.LocalDate hasta) {
         List<Factura> resultado = new ArrayList<>();
         for (Factura f : facturas) {
-            if (f.getInmuebleId().equals(inmuebleId)
+            if (f.getInmuebleId().toLowerCase().contains(inmuebleId.toLowerCase())
                     && !f.getFechaEmision().isBefore(desde)
                     && !f.getFechaEmision().isAfter(hasta)) {
                 resultado.add(f);
@@ -227,7 +227,7 @@ public class RepositorioDatos {
             java.time.LocalDate hasta) {
         List<MovimientoBancario> resultado = new ArrayList<>();
         for (MovimientoBancario m : movimientos) {
-            if (m.getInmuebleId().equals(inmuebleId)
+            if (m.getInmuebleId().toLowerCase().contains(inmuebleId.toLowerCase())
                     && !m.getFecha().isBefore(desde)
                     && !m.getFecha().isAfter(hasta)) {
                 resultado.add(m);

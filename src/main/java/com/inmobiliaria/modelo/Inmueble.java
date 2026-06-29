@@ -11,7 +11,7 @@ public abstract class Inmueble implements Serializable {
 
     private String id;
     private String direccion;
-    private String numero;
+    private String numero; // Identificador interno del inmueble (ej. número de matrícula o código de oficina). No confundir con el número de piso en subclases.
     private String descripcion;
     private String codigoPostal;
     private double precioAlquiler;
@@ -60,7 +60,7 @@ public abstract class Inmueble implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("[%s] %s - %s | %s | %s | $%.2f | %s",
+        return String.format("[%s] %s (Cód: %s) | %s | %s | $%.2f | %s",
                 getTipoInmueble(), direccion, numero, descripcion,
                 codigoPostal, precioAlquiler,
                 disponible ? "DISPONIBLE" : "OCUPADO");

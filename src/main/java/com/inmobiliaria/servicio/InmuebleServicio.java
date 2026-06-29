@@ -64,15 +64,62 @@ public class InmuebleServicio {
         return id;
     }
 
-    public boolean modificarInmueble(String id, String descripcion,
-                                     String codigoPostal, double precio) {
+    public boolean modificarInmueble(String id, String direccion, String numero,
+                                     String descripcion, String codigoPostal, double precio) {
         Validador.validarCodigoPostal(codigoPostal);
         Inmueble inm = repo.buscarInmueblePorId(id);
         if (inm == null) return false;
+        inm.setDireccion(direccion);
+        inm.setNumero(numero);
         inm.setDescripcion(descripcion);
         inm.setCodigoPostal(codigoPostal);
         inm.setPrecioAlquiler(precio);
         repo.actualizarInmueble(inm);
+        return true;
+    }
+
+    public boolean modificarEdificio(String id, int numPisos, String nombreEdificio) {
+        Inmueble inm = repo.buscarInmueblePorId(id);
+        if (!(inm instanceof Edificio e)) return false;
+        e.setNumeroPisos(numPisos);
+        e.setNombreEdificio(nombreEdificio);
+        repo.actualizarInmueble(e);
+        return true;
+    }
+
+    public boolean modificarPiso(String id, int numPiso, String tipoEspacio,
+                                 String descEsp, String edificioId) {
+        Inmueble inm = repo.buscarInmueblePorId(id);
+        if (!(inm instanceof Piso p)) return false;
+        if (edificioId != null && !edificioId.isEmpty()) {
+            Inmueble edificioRef = repo.buscarInmueblePorId(edificioId);
+            if (!(edificioRef instanceof Edificio)) {
+                throw new IllegalArgumentException("El ID de edificio \"" + edificioId + "\" no existe o no es un edificio.");
+            }
+        }
+        p.setNumeroPiso(numPiso);
+        p.setTipoEspacio(tipoEspacio);
+        p.setDescripcionEspecifica(descEsp);
+        p.setEdificioId(edificioId.isEmpty() ? null : edificioId);
+        repo.actualizarInmueble(p);
+        return true;
+    }
+
+    public boolean modificarLocal(String id, int numPiso, String tipoLocal,
+                                  String descEsp, String edificioId) {
+        Inmueble inm = repo.buscarInmueblePorId(id);
+        if (!(inm instanceof Local l)) return false;
+        if (edificioId != null && !edificioId.isEmpty()) {
+            Inmueble edificioRef = repo.buscarInmueblePorId(edificioId);
+            if (!(edificioRef instanceof Edificio)) {
+                throw new IllegalArgumentException("El ID de edificio \"" + edificioId + "\" no existe o no es un edificio.");
+            }
+        }
+        l.setNumeroPiso(numPiso);
+        l.setTipoLocal(tipoLocal);
+        l.setDescripcionEspecifica(descEsp);
+        l.setEdificioId(edificioId.isEmpty() ? null : edificioId);
+        repo.actualizarInmueble(l);
         return true;
     }
 

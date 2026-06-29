@@ -4,6 +4,8 @@ import com.inmobiliaria.servicio.InmuebleServicio;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /**
  * Ventana principal de la aplicación inmobiliaria.
@@ -32,12 +34,18 @@ public class VentanaPrincipal extends JFrame {
         JTabbedPane tabbedPane = crearTabbedPane();
         add(crearHeader(), BorderLayout.NORTH);
         add(tabbedPane, BorderLayout.CENTER);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                confirmarSalida();
+            }
+        });
         setVisible(true);
     }
 
     private void configurarVentana() {
         setTitle("Sistema de Gestión Inmobiliaria");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setSize(1150, 750);
         setMinimumSize(new Dimension(900, 600));
         setLocationRelativeTo(null);
@@ -79,7 +87,16 @@ public class VentanaPrincipal extends JFrame {
         textos.add(panelMarca);
         textos.add(subtitulo);
 
+        JButton btnSalir = new JButton("Salir");
+        btnSalir.setFont(FUENTE_NORMAL);
+        btnSalir.setBackground(COLOR_ERROR);
+        btnSalir.setForeground(Color.WHITE);
+        btnSalir.setFocusPainted(false);
+        btnSalir.setBorderPainted(false);
+        btnSalir.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btnSalir.addActionListener(e -> confirmarSalida());
         contenido.add(textos, BorderLayout.WEST);
+        contenido.add(btnSalir, BorderLayout.EAST);
         header.add(contenido, BorderLayout.CENTER);
         header.add(lineaDorada, BorderLayout.SOUTH);
         return header;
@@ -99,6 +116,16 @@ public class VentanaPrincipal extends JFrame {
         return tp;
     }
 
+
+    private void confirmarSalida() {
+        int opcion = JOptionPane.showConfirmDialog(this,
+                "¿Desea salir del sistema?",
+                "Confirmar salida", JOptionPane.YES_NO_OPTION);
+        if (opcion == JOptionPane.YES_OPTION) {
+            dispose();
+            System.exit(0);
+        }
+    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(VentanaPrincipal::new);

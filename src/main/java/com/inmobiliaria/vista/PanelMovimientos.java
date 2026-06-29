@@ -13,6 +13,7 @@ import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,6 +27,7 @@ public class PanelMovimientos extends JPanel {
     private JTextField txtFiltroInm, txtDesde, txtHasta;
 
     private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter FMT_VISTA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private static final String[] COLS = {
             "ID", "Tipo", "Inmueble", "Fecha", "Importe ($)", "Persona / Entidad"
@@ -94,24 +96,24 @@ public class PanelMovimientos extends JPanel {
         JPanel filtros = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
         filtros.setBackground(VentanaPrincipal.COLOR_FONDO);
 
-        txtFiltroInm = tf(12); txtDesde = tf(10); txtHasta = tf(10);
+        txtFiltroInm = SwingUtil.crearTextField(12); txtDesde = SwingUtil.crearTextField(10); txtHasta = SwingUtil.crearTextField(10);
 
-        JButton btnFiltrar = btn(" Filtrar por Inmueble y Período",
+        JButton btnFiltrar = SwingUtil.crearBoton(" Filtrar por Inmueble y Período",
                 VentanaPrincipal.COLOR_SECUNDARIO);
-        JButton btnTodos   = btn("Ver Todos", new Color(100, 116, 139));
+        JButton btnTodos   = SwingUtil.crearBoton("Ver Todos", new Color(100, 116, 139));
 
         btnFiltrar.addActionListener(e -> filtrar());
         btnTodos.addActionListener(e -> cargar(servicio.getTodosMovimientos()));
 
-        filtros.add(lbl("ID Inmueble:")); filtros.add(txtFiltroInm);
-        filtros.add(lbl("Desde (yyyy-MM-dd):")); filtros.add(txtDesde);
-        filtros.add(lbl("Hasta:")); filtros.add(txtHasta);
+        filtros.add(SwingUtil.crearLabel("Inmueble (ID o dirección):")); filtros.add(txtFiltroInm);
+        filtros.add(SwingUtil.crearLabel("Desde (dd/MM/yyyy):")); filtros.add(txtDesde);
+        filtros.add(SwingUtil.crearLabel("Hasta (dd/MM/yyyy):")); filtros.add(txtHasta);
         filtros.add(btnFiltrar); filtros.add(btnTodos);
 
         // Botones
         JPanel bots = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
         bots.setBackground(VentanaPrincipal.COLOR_FONDO);
-        JButton btnNuevo = btn("＋ Registrar Movimiento", VentanaPrincipal.COLOR_ACENTO);
+        JButton btnNuevo = SwingUtil.crearBoton("＋ Registrar Movimiento", VentanaPrincipal.COLOR_ACENTO);
         btnNuevo.addActionListener(e -> registrar());
         bots.add(btnNuevo);
 
@@ -132,19 +134,28 @@ public class PanelMovimientos extends JPanel {
     }
 
     private void filtrar() {
-        String idInm = txtFiltroInm.getText().trim();
-        if (idInm.isEmpty()) { cargar(servicio.getTodosMovimientos()); return; }
+        String texto = txtFiltroInm.getText().trim();
+        if (texto.isEmpty()) { cargar(servicio.getTodosMovimientos()); return; }
         try {
             LocalDate d = txtDesde.getText().trim().isEmpty()
                     ? LocalDate.of(2000, 1, 1)
-                    : LocalDate.parse(txtDesde.getText().trim(), FMT);
+                    : LocalDate.parse(txtDesde.getText().trim(), FMT_VISTA);
             LocalDate h = txtHasta.getText().trim().isEmpty()
                     ? LocalDate.now()
-                    : LocalDate.parse(txtHasta.getText().trim(), FMT);
-            cargar(servicio.consultarMovimientosPorPeriodo(idInm, d, h));
+                    : LocalDate.parse(txtHasta.getText().trim(), FMT_VISTA);
+
+            List<MovimientoBancario> resultado = new ArrayList<>();
+            List<Inmueble> todos = servicio.getTodosInmuebles();
+            for (Inmueble inm : todos) {
+                if (inm.getId().toLowerCase().contains(texto.toLowerCase())
+                        || inm.getDireccion().toLowerCase().contains(texto.toLowerCase())) {
+                    resultado.addAll(servicio.consultarMovimientosPorPeriodo(inm.getId(), d, h));
+                }
+            }
+            cargar(resultado);
         } catch (DateTimeParseException ex) {
             JOptionPane.showMessageDialog(this,
-                    "Formato de fecha inválido. Use yyyy-MM-dd",
+                    "Formato de fecha inválido. Use dd/MM/yyyy (ej: 15/01/2024)",
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -164,9 +175,9 @@ public class PanelMovimientos extends JPanel {
         JComboBox<String> cmbInm  = new JComboBox<>(opInm);
         JComboBox<MovimientoBancario.TipoMovimiento> cmbTipo =
                 new JComboBox<>(MovimientoBancario.TipoMovimiento.values());
-        JTextField tfFecha   = tf(12); tfFecha.setText(LocalDate.now().format(FMT));
-        JTextField tfImporte = tf(12);
-        JTextField tfEntidad = tf(22);
+        JTextField tfFecha   = SwingUtil.crearTextField(12); tfFecha.setText(LocalDate.now().format(FMT_VISTA));
+        JTextField tfImporte = SwingUtil.crearTextField(12);
+        JTextField tfEntidad = SwingUtil.crearTextField(22);
 
         cmbInm.setFont(VentanaPrincipal.FUENTE_NORMAL);
         cmbTipo.setFont(VentanaPrincipal.FUENTE_NORMAL);
@@ -174,7 +185,7 @@ public class PanelMovimientos extends JPanel {
         Object[] form = {
                 "Inmueble:", cmbInm,
                 "Tipo de movimiento:", cmbTipo,
-                "Fecha (yyyy-MM-dd):", tfFecha,
+                "Fecha (dd/MM/yyyy):", tfFecha,
                 "Importe ($):", tfImporte,
                 "Persona / Entidad (acreedor o deudor):", tfEntidad
         };
@@ -187,7 +198,7 @@ public class PanelMovimientos extends JPanel {
             String idInm  = inmuebles.get(cmbInm.getSelectedIndex()).getId();
             MovimientoBancario.TipoMovimiento tipo =
                     (MovimientoBancario.TipoMovimiento) cmbTipo.getSelectedItem();
-            LocalDate fecha   = LocalDate.parse(tfFecha.getText().trim(), FMT);
+            LocalDate fecha   = LocalDate.parse(tfFecha.getText().trim(), FMT_VISTA);
             double   importe  = Double.parseDouble(tfImporte.getText().trim());
             Validador.validarPositivo(importe, "Importe");
             String   entidad  = tfEntidad.getText().trim();
@@ -205,7 +216,7 @@ public class PanelMovimientos extends JPanel {
                     "Error de formato", JOptionPane.ERROR_MESSAGE);
         } catch (DateTimeParseException ex) {
             JOptionPane.showMessageDialog(this,
-                    "Formato de fecha inválido. Use yyyy-MM-dd (ej: 2024-01-15).",
+                    "Formato de fecha inválido. Use dd/MM/yyyy (ej: 15/01/2024).",
                     "Error de fecha", JOptionPane.ERROR_MESSAGE);
         } catch (IllegalArgumentException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(),
@@ -218,7 +229,7 @@ public class PanelMovimientos extends JPanel {
         for (MovimientoBancario m : lista) {
             modelo.addRow(new Object[]{
                     m.getId(), m.getTipoMovimiento().getDescripcion(),
-                    m.getInmuebleId(), m.getFecha(),
+                    m.getInmuebleId(), m.getFecha().format(FMT_VISTA),
                     String.format("%.2f", m.getImporte()),
                     m.getPersonaEntidad()
             });
@@ -232,28 +243,5 @@ public class PanelMovimientos extends JPanel {
         return l;
     }
 
-    private JTextField tf(int cols) {
-        JTextField t = new JTextField(cols);
-        t.setFont(VentanaPrincipal.FUENTE_NORMAL);
-        return t;
-    }
-
-    private JLabel lbl(String txt) {
-        JLabel l = new JLabel(txt);
-        l.setFont(VentanaPrincipal.FUENTE_NORMAL);
-        return l;
-    }
-
-    private JButton btn(String txt, Color c) {
-        JButton b = new JButton(txt);
-        b.setFont(VentanaPrincipal.FUENTE_NORMAL);
-        b.setBackground(c);
-        b.setForeground(Color.WHITE);
-        b.setFocusPainted(false);
-        b.setBorderPainted(false);
-        b.setBorder(new EmptyBorder(7, 14, 7, 14));
-        b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        return b;
-    }
 }
 

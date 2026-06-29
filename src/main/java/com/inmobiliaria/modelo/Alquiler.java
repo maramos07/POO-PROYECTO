@@ -16,6 +16,7 @@ public class Alquiler implements Serializable {
     private boolean activo;
 
     public Alquiler(String id, String inquilinoId, String inmuebleId, LocalDate fechaInicio) {
+        if (fechaInicio == null) throw new IllegalArgumentException("La fecha de inicio es obligatoria.");
         this.id = id;
         this.inquilinoId = inquilinoId;
         this.inmuebleId = inmuebleId;
@@ -25,6 +26,9 @@ public class Alquiler implements Serializable {
     }
 
     public void finalizar(LocalDate fechaFin) {
+        if (fechaFin == null || !fechaFin.isAfter(fechaInicio)) {
+            throw new IllegalArgumentException("La fecha de fin debe ser posterior a la fecha de inicio.");
+        }
         this.fechaFin = fechaFin;
         this.activo = false;
     }
@@ -40,7 +44,12 @@ public class Alquiler implements Serializable {
     public void setInmuebleId(String inmuebleId) { this.inmuebleId = inmuebleId; }
 
     public LocalDate getFechaInicio() { return fechaInicio; }
-    public void setFechaInicio(LocalDate fechaInicio) { this.fechaInicio = fechaInicio; }
+    public void setFechaInicio(LocalDate fechaInicio) {
+        if (fechaFin != null && (fechaInicio == null || !fechaInicio.isBefore(fechaFin))) {
+            throw new IllegalArgumentException("La fecha de inicio debe ser anterior a la fecha de fin.");
+        }
+        this.fechaInicio = fechaInicio;
+    }
 
     public LocalDate getFechaFin() { return fechaFin; }
     public void setFechaFin(LocalDate fechaFin) { this.fechaFin = fechaFin; }

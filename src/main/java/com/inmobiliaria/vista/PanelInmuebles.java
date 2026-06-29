@@ -22,7 +22,7 @@ public class PanelInmuebles extends JPanel {
     private JLabel lblResultado;
 
     private static final String[] COLUMNAS = {
-            "ID", "Tipo", "Dirección", "Número", "Descripción",
+            "ID", "Tipo", "Dirección", "Cód. Interno", "Descripción",
             "Cód. Postal", "Precio Alquiler", "Estado"
     };
 
@@ -51,10 +51,10 @@ public class PanelInmuebles extends JPanel {
         txtBuscar = new JTextField(25);
         txtBuscar.setFont(VentanaPrincipal.FUENTE_NORMAL);
 
-        JButton btnBuscar = boton("Buscar", VentanaPrincipal.COLOR_SECUNDARIO);
+        JButton btnBuscar = SwingUtil.crearBoton("Buscar", VentanaPrincipal.COLOR_SECUNDARIO);
         btnBuscar.addActionListener(e -> buscar());
 
-        JButton btnTodos = boton("Ver Todos", new Color(100, 116, 139));
+        JButton btnTodos = SwingUtil.crearBoton("Ver Todos", new Color(100, 116, 139));
         btnTodos.addActionListener(e -> cargarTabla(servicio.getTodosInmuebles()));
 
         lblResultado = new JLabel("");
@@ -132,9 +132,9 @@ public class PanelInmuebles extends JPanel {
         JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 8));
         p.setBackground(VentanaPrincipal.COLOR_FONDO);
 
-        JButton btnNuevo   = boton("＋ Nuevo Inmueble", VentanaPrincipal.COLOR_ACENTO);
-        JButton btnEditar  = boton("✏ Editar",          VentanaPrincipal.COLOR_SECUNDARIO);
-        JButton btnElim    = boton("🗑 Eliminar",        VentanaPrincipal.COLOR_ERROR);
+        JButton btnNuevo   = SwingUtil.crearBoton("＋ Nuevo Inmueble", VentanaPrincipal.COLOR_ACENTO);
+        JButton btnEditar  = SwingUtil.crearBoton("✏ Editar",          VentanaPrincipal.COLOR_SECUNDARIO);
+        JButton btnElim    = SwingUtil.crearBoton("🗑 Eliminar",        VentanaPrincipal.COLOR_ERROR);
 
         btnNuevo.addActionListener(e -> abrirFormularioNuevo());
         btnEditar.addActionListener(e -> editarSeleccionado());
@@ -155,7 +155,7 @@ public class PanelInmuebles extends JPanel {
 
     private void editarSeleccionado() {
         int fila = tabla.getSelectedRow();
-        if (fila < 0) { mostrarAviso("Seleccione un inmueble para editar."); return; }
+        if (fila < 0) { SwingUtil.mostrarAviso(this, "Seleccione un inmueble para editar."); return; }
         String id = (String) modeloTabla.getValueAt(fila, 0);
         Inmueble inm = servicio.buscarPorId(id);
         DialogoInmueble dlg = new DialogoInmueble(
@@ -166,7 +166,7 @@ public class PanelInmuebles extends JPanel {
 
     private void eliminarSeleccionado() {
         int fila = tabla.getSelectedRow();
-        if (fila < 0) { mostrarAviso("Seleccione un inmueble para eliminar."); return; }
+        if (fila < 0) { SwingUtil.mostrarAviso(this, "Seleccione un inmueble para eliminar."); return; }
         String id = (String) modeloTabla.getValueAt(fila, 0);
         int confirm = JOptionPane.showConfirmDialog(this,
                 "Se eliminarán también todas sus facturas, movimientos y alquileres asociados. ¿Desea continuar?",
@@ -186,22 +186,5 @@ public class PanelInmuebles extends JPanel {
         }
     }
 
-    // ── Utilidades ────────────────────────────────────────────────────────────
-
-    private JButton boton(String texto, Color color) {
-        JButton btn = new JButton(texto);
-        btn.setFont(VentanaPrincipal.FUENTE_NORMAL);
-        btn.setBackground(color);
-        btn.setForeground(Color.WHITE);
-        btn.setFocusPainted(false);
-        btn.setBorderPainted(false);
-        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btn.setBorder(new EmptyBorder(7, 16, 7, 16));
-        return btn;
-    }
-
-    private void mostrarAviso(String msg) {
-        JOptionPane.showMessageDialog(this, msg, "Aviso", JOptionPane.WARNING_MESSAGE);
-    }
 }
 
