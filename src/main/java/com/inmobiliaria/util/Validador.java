@@ -2,7 +2,7 @@ package com.inmobiliaria.util;
 
 /**
  * Clase utilitaria con métodos estáticos de validación.
- * Cada método lanza IllegalArgumentException si el valor no cumple las reglas.
+ * Cada metodo lanza IllegalArgumentException si el valor no cumple las reglas.
  * @author Equipo POO
  */
 public class Validador {
