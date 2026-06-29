@@ -10,6 +10,7 @@ import java.awt.event.WindowEvent;
 /**
  * Ventana principal de la aplicación inmobiliaria.
  * Organiza las funcionalidades mediante pestañas (JTabbedPane).
+ * @author Equipo POO
  */
 public class VentanaPrincipal extends JFrame {
 
@@ -117,6 +118,10 @@ public class VentanaPrincipal extends JFrame {
     }
 
 
+    /**
+     * Muestra un diálogo de confirmación antes de cerrar la aplicación.
+     * Si el usuario confirma, libera los recursos de la ventana y finaliza el proceso.
+     */
     private void confirmarSalida() {
         int opcion = JOptionPane.showConfirmDialog(this,
                 "¿Desea salir del sistema?",

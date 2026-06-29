@@ -18,6 +18,7 @@ import java.util.List;
 
 /**
  * Panel para registrar y consultar movimientos bancarios por inmueble y período.
+ * @author Equipo POO
  */
 public class PanelMovimientos extends JPanel {
 

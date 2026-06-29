@@ -5,6 +5,7 @@ import java.time.LocalDate;
 
 /**
  * Representa el contrato de alquiler entre un inquilino y un inmueble.
+ * @author Equipo POO
  */
 public class Alquiler implements Serializable {
 
@@ -15,6 +16,13 @@ public class Alquiler implements Serializable {
     private LocalDate fechaFin;     // null si está activo
     private boolean activo;
 
+    /**
+     * @param id identificador del alquiler
+     * @param inquilinoId ID del inquilino
+     * @param inmuebleId ID del inmueble
+     * @param fechaInicio fecha de inicio del contrato
+     * @throws IllegalArgumentException si fechaInicio es null
+     */
     public Alquiler(String id, String inquilinoId, String inmuebleId, LocalDate fechaInicio) {
         if (fechaInicio == null) throw new IllegalArgumentException("La fecha de inicio es obligatoria.");
         this.id = id;

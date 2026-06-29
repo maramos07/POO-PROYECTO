@@ -12,6 +12,7 @@ import java.util.List;
 
 /**
  * Panel para registrar alquileres y desalquileres de inmuebles.
+ * @author Equipo POO
  */
 public class PanelAlquileres extends JPanel {
 

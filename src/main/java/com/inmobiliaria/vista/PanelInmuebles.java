@@ -11,6 +11,7 @@ import java.util.List;
 
 /**
  * Panel para CRUD completo de inmuebles (Edificios, Pisos, Locales).
+ * @author Equipo POO
  */
 public class PanelInmuebles extends JPanel {
 

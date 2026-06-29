@@ -12,6 +12,7 @@ import java.util.List;
 
 /**
  * Panel para registrar, consultar y eliminar inquilinos.
+ * @author Equipo POO
  */
 public class PanelInquilinos extends JPanel {
 

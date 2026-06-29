@@ -5,11 +5,12 @@ import java.io.Serializable;
 /**
  * Representa un inquilino que puede alquilar inmuebles.
  * Encapsula sus datos personales y tipo de respaldo económico.
+ * @author Equipo POO
  */
 public class Inquilino implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    // Sexos válidos
+    /** Sexos válidos para un inquilino. */
     public enum Sexo {
         MASCULINO("Masculino"),
         FEMENINO("Femenino"),
@@ -23,7 +24,7 @@ public class Inquilino implements Serializable {
         public String toString() { return descripcion; }
     }
 
-    // Tipos de respaldo válidos
+    /** Tipos de respaldo económico válidos. */
     public enum TipoRespaldo {
         NOMINA("Nómina"),
         AVAL_BANCARIO("Aval Bancario"),
@@ -46,6 +47,15 @@ public class Inquilino implements Serializable {
     private String medioContacto;
     private TipoRespaldo tipoRespaldo;
 
+    /**
+     * @param id identificador único del inquilino
+     * @param nombre nombre completo
+     * @param cedula número de cédula
+     * @param edad edad en años
+     * @param sexo sexo (debe coincidir con Sexo.values())
+     * @param medioContacto teléfono o email
+     * @param tipoRespaldo tipo de respaldo económico
+     */
     public Inquilino(String id, String nombre, String cedula, int edad,
                      String sexo,
                      String medioContacto, TipoRespaldo tipoRespaldo) {
@@ -59,19 +69,33 @@ public class Inquilino implements Serializable {
     }
 
     // Getters y Setters
+
+    /** @return identificador único */
     public String getId() { return id; }
+    /** @param id nuevo identificador */
     public void setId(String id) { this.id = id; }
 
+    /** @return nombre completo */
     public String getNombre() { return nombre; }
+    /** @param nombre nuevo nombre */
     public void setNombre(String nombre) { this.nombre = nombre; }
 
+    /** @return número de cédula */
     public String getCedula() { return cedula; }
+    /** @param cedula nueva cédula */
     public void setCedula(String cedula) { this.cedula = cedula; }
 
+    /** @return edad en años */
     public int getEdad() { return edad; }
+    /** @param edad nueva edad */
     public void setEdad(int edad) { this.edad = edad; }
 
+    /** @return sexo del inquilino */
     public String getSexo() { return sexo; }
+    /**
+     * @param sexo sexo del inquilino (debe coincidir con Sexo.values())
+     * @throws IllegalArgumentException si el sexo no es válido
+     */
     public void setSexo(String sexo) {
         boolean valido = false;
         for (Sexo s : Sexo.values()) {
@@ -84,10 +108,14 @@ public class Inquilino implements Serializable {
         this.sexo = sexo;
     }
 
+    /** @return teléfono o email de contacto */
     public String getMedioContacto() { return medioContacto; }
+    /** @param medioContacto nuevo contacto */
     public void setMedioContacto(String medioContacto) { this.medioContacto = medioContacto; }
 
+    /** @return tipo de respaldo económico */
     public TipoRespaldo getTipoRespaldo() { return tipoRespaldo; }
+    /** @param tipoRespaldo nuevo tipo de respaldo */
     public void setTipoRespaldo(TipoRespaldo tipoRespaldo) { this.tipoRespaldo = tipoRespaldo; }
 
     @Override

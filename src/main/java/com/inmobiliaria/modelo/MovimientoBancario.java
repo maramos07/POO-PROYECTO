@@ -6,10 +6,12 @@ import java.time.LocalDate;
 /**
  * Representa un movimiento bancario asociado a un inmueble.
  * Puede ser ingreso (alquiler) o gasto (servicio, reforma, reparación).
+ * @author Equipo POO
  */
 public class MovimientoBancario implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    /** Tipos posibles de movimiento bancario. */
     public enum TipoMovimiento {
         INGRESO_ALQUILER("Ingreso por Alquiler"),
         GASTO_SERVICIO("Gasto por Servicio"),
@@ -33,6 +35,14 @@ public class MovimientoBancario implements Serializable {
     private double importe;
     private String personaEntidad;   // Acreedor o deudor
 
+    /**
+     * @param id identificador único del movimiento
+     * @param tipoMovimiento tipo de movimiento (ingreso/gasto)
+     * @param inmuebleId ID del inmueble asociado
+     * @param fecha fecha del movimiento
+     * @param importe monto del movimiento
+     * @param personaEntidad persona o entidad asociada
+     */
     public MovimientoBancario(String id, TipoMovimiento tipoMovimiento,
                               String inmuebleId, LocalDate fecha,
                               double importe, String personaEntidad) {
@@ -45,22 +55,35 @@ public class MovimientoBancario implements Serializable {
     }
 
     // Getters y Setters
+
+    /** @return identificador único */
     public String getId() { return id; }
+    /** @param id nuevo identificador */
     public void setId(String id) { this.id = id; }
 
+    /** @return tipo de movimiento */
     public TipoMovimiento getTipoMovimiento() { return tipoMovimiento; }
+    /** @param tipo nuevo tipo de movimiento */
     public void setTipoMovimiento(TipoMovimiento tipo) { this.tipoMovimiento = tipo; }
 
+    /** @return ID del inmueble asociado */
     public String getInmuebleId() { return inmuebleId; }
+    /** @param inmuebleId nuevo ID de inmueble */
     public void setInmuebleId(String inmuebleId) { this.inmuebleId = inmuebleId; }
 
+    /** @return fecha del movimiento */
     public LocalDate getFecha() { return fecha; }
+    /** @param fecha nueva fecha */
     public void setFecha(LocalDate fecha) { this.fecha = fecha; }
 
+    /** @return monto del movimiento */
     public double getImporte() { return importe; }
+    /** @param importe nuevo monto */
     public void setImporte(double importe) { this.importe = importe; }
 
+    /** @return persona o entidad asociada */
     public String getPersonaEntidad() { return personaEntidad; }
+    /** @param personaEntidad nueva persona o entidad */
     public void setPersonaEntidad(String personaEntidad) { this.personaEntidad = personaEntidad; }
 
     @Override

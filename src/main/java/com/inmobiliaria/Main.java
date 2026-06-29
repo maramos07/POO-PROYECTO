@@ -6,8 +6,13 @@ import javax.swing.*;
 
 /**
  * Punto de entrada principal de la aplicación inmobiliaria.
+ * @author Equipo POO
  */
 public class Main {
+    /**
+     * Inicia la aplicación cargando la ventana principal en el hilo de eventos de Swing.
+     * @param args argumentos de línea de comandos (no utilizados)
+     */
     public static void main(String[] args) {
         // Aplicar look & feel del sistema operativo
         try {

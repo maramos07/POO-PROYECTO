@@ -12,6 +12,7 @@ import java.util.List;
 /**
  * Diálogo modal para registrar o editar un inmueble.
  * Adapta los campos según el tipo seleccionado: Edificio, Piso o Local.
+ * @author Equipo POO
  */
 public class DialogoInmueble extends JDialog {
 
@@ -236,6 +237,10 @@ public class DialogoInmueble extends JDialog {
         }
     }
 
+    /**
+     * Indica si el usuario ha guardado correctamente los datos del inmueble.
+     * @return {@code true} si se realizó una operación de guardado con éxito
+     */
     public boolean isGuardado() { return guardado; }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

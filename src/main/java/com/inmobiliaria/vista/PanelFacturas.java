@@ -17,6 +17,7 @@ import java.util.List;
 
 /**
  * Panel para registrar y consultar facturas de gastos asociadas a inmuebles.
+ * @author Equipo POO
  */
 public class PanelFacturas extends JPanel {
 
