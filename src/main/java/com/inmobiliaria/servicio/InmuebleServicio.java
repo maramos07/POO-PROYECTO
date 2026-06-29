@@ -60,6 +60,13 @@ public class InmuebleServicio {
     }
 
     public boolean eliminarInmueble(String id) {
+        Inmueble inm = repo.buscarInmueblePorId(id);
+        if (inm == null || !inm.isDisponible()) {
+            return false;
+        }
+        repo.eliminarAlquileresDeInmueble(id);
+        repo.eliminarFacturasDeInmueble(id);
+        repo.eliminarMovimientosDeInmueble(id);
         return repo.eliminarInmueble(id);
     }
 
@@ -95,7 +102,12 @@ public class InmuebleServicio {
         return repo.buscarInquilinoPorId(id);
     }
 
-    public boolean eliminarInquilino(String id){ return repo.eliminarInquilino(id);}
+    public boolean eliminarInquilino(String id) {
+        if (repo.tieneAlquileresActivos(id)) {
+            return false;
+        }
+        return repo.eliminarInquilino(id);
+    }
 
     // ── ALQUILER / DESALQUILER ─────────────────────────────────────────────────
 

@@ -169,14 +169,20 @@ public class PanelInmuebles extends JPanel {
         if (fila < 0) { mostrarAviso("Seleccione un inmueble para eliminar."); return; }
         String id = (String) modeloTabla.getValueAt(fila, 0);
         int confirm = JOptionPane.showConfirmDialog(this,
-                "¿Desea eliminar el inmueble " + id + "?",
+                "Se eliminarán también todas sus facturas, movimientos y alquileres asociados. ¿Desea continuar?",
                 "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
-            servicio.eliminarInmueble(id);
-            cargarTabla(servicio.getTodosInmuebles());
-            JOptionPane.showMessageDialog(this,
-                    "Inmueble eliminado correctamente.",
-                    "Info", JOptionPane.INFORMATION_MESSAGE);
+            boolean ok = servicio.eliminarInmueble(id);
+            if (ok) {
+                cargarTabla(servicio.getTodosInmuebles());
+                JOptionPane.showMessageDialog(this,
+                        "Inmueble eliminado correctamente.",
+                        "Info", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "NO se puede eliminar: el inmueble está ocupado. Desalquile primero.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 

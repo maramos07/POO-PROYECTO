@@ -143,12 +143,17 @@ public class PanelInquilinos extends JPanel {
                 "¿Eliminar inquilino " + id + "?",
                 "Confirmar", JOptionPane.YES_NO_OPTION);
         if (conf == JOptionPane.YES_OPTION) {
-            servicio.buscarInquilinoPorId(id);
-            servicio.eliminarInquilino(id);
-            JOptionPane.showMessageDialog(this,
-                    "Inquilino eliminado correctamente.",
-                    "Info", JOptionPane.INFORMATION_MESSAGE);
-            actualizar();
+            boolean ok = servicio.eliminarInquilino(id);
+            if (ok) {
+                JOptionPane.showMessageDialog(this,
+                        "Inquilino eliminado correctamente.",
+                        "Info", JOptionPane.INFORMATION_MESSAGE);
+                actualizar();
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "NO se puede eliminar: tiene alquileres activos. Desalquile primero.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 

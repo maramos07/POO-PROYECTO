@@ -165,10 +165,17 @@ public class PanelFacturas extends JPanel {
                     "Éxito", JOptionPane.INFORMATION_MESSAGE);
             cargar(servicio.getTodasFacturas());
 
-        } catch (Exception ex) {
+        } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this,
-                    "Error al registrar: " + ex.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
+                    "El costo debe ser un número válido y mayor a cero.",
+                    "Error de formato", JOptionPane.ERROR_MESSAGE);
+        } catch (DateTimeParseException ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Formato de fecha inválido. Use yyyy-MM-dd (ej: 2024-01-15).",
+                    "Error de fecha", JOptionPane.ERROR_MESSAGE);
+        } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(),
+                    "Campo requerido", JOptionPane.WARNING_MESSAGE);
         }
     }
 

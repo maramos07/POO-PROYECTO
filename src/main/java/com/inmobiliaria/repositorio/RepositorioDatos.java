@@ -4,12 +4,15 @@ import com.inmobiliaria.modelo.*;
 
 import java.io.*;
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Repositorio central de datos con persistencia en archivos serializados.
  * Implementa el patrón Singleton para una única instancia en la aplicación.
  */
 public class RepositorioDatos {
+
+    private static final Logger LOG = Logger.getLogger(RepositorioDatos.class.getName());
 
     private static final String DIR_DATOS = "datos/";
     private static final String ARCHIVO_INMUEBLES     = DIR_DATOS + "inmuebles.dat";
@@ -149,6 +152,15 @@ public class RepositorioDatos {
         return new ArrayList<>(inquilinos.values());
     }
 
+    public boolean tieneAlquileresActivos(String inquilinoId) {
+        for (Alquiler a : alquileres) {
+            if (a.getInquilinoId().equals(inquilinoId) && a.isActivo()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // ── FACTURAS ───────────────────────────────────────────────────────────────
 
     public void agregarFactura(Factura factura) {
@@ -228,6 +240,14 @@ public class RepositorioDatos {
     }
 
     public void actualizarAlquiler(Alquiler alquiler) {
+        for (int i = 0; i < alquileres.size(); i++) {
+            if (alquileres.get(i).getId().equals(alquiler.getId())) {
+                alquileres.set(i, alquiler);
+                guardarAlquileres();
+                return;
+            }
+        }
+        alquileres.add(alquiler);
         guardarAlquileres();
     }
 
@@ -241,6 +261,23 @@ public class RepositorioDatos {
 
     public List<Alquiler> getTodosAlquileres() { return new ArrayList<>(alquileres); }
 
+    // ── LIMPIEZA DE DATOS HUÉRFANOS ─────────────────────────────────────────────
+
+    public void eliminarFacturasDeInmueble(String inmuebleId) {
+        facturas.removeIf(f -> f.getInmuebleId().equals(inmuebleId));
+        guardarFacturas();
+    }
+
+    public void eliminarMovimientosDeInmueble(String inmuebleId) {
+        movimientos.removeIf(m -> m.getInmuebleId().equals(inmuebleId));
+        guardarMovimientos();
+    }
+
+    public void eliminarAlquileresDeInmueble(String inmuebleId) {
+        alquileres.removeIf(a -> a.getInmuebleId().equals(inmuebleId));
+        guardarAlquileres();
+    }
+
     // ── PERSISTENCIA ───────────────────────────────────────────────────────────
 
     @SuppressWarnings("unchecked")
@@ -252,14 +289,18 @@ public class RepositorioDatos {
             contadorFacturas    = c[2];
             contadorMovimientos = c[3];
             contadorAlquileres  = c[4];
-        } catch (Exception ignored) {}
+        } catch (Exception e) {
+            LOG.warning("No se pudieron cargar los contadores: " + e.getMessage());
+        }
     }
 
     private void guardarContadores(){
         try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(ARCHIVO_CONTADORES))){
             oos.writeObject(new int[]{contadorInmuebles, contadorInquilinos,
                     contadorFacturas, contadorMovimientos, contadorAlquileres});
-        }catch(Exception ignored) {}
+        } catch (IOException e) {
+            LOG.warning("No se pudieron guardar los contadores: " + e.getMessage());
+        }
     }
 
     private void cargarTodo() {
@@ -279,7 +320,8 @@ public class RepositorioDatos {
         if (!f.exists()) return porDefecto;
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f))) {
             return (T) ois.readObject();
-        } catch (Exception e) {
+        } catch (IOException | ClassNotFoundException e) {
+            LOG.warning("No se pudo cargar " + ruta + ": " + e.getMessage());
             return porDefecto;
         }
     }
@@ -288,7 +330,7 @@ public class RepositorioDatos {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(ruta))) {
             oos.writeObject(datos);
         } catch (IOException e) {
-            System.err.println("Error guardando " + ruta + ": " + e.getMessage());
+            LOG.warning("Error guardando " + ruta + ": " + e.getMessage());
         }
     }
 
