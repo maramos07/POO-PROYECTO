@@ -3,6 +3,7 @@ package com.inmobiliaria.vista;
 import com.inmobiliaria.modelo.Factura;
 import com.inmobiliaria.modelo.Inmueble;
 import com.inmobiliaria.servicio.InmuebleServicio;
+import com.inmobiliaria.util.Validador;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -157,7 +158,9 @@ public class PanelFacturas extends JPanel {
             LocalDate fecha = LocalDate.parse(tfFecha.getText().trim(), FMT);
             Factura.ConceptoFactura conc = (Factura.ConceptoFactura) cmbConc.getSelectedItem();
             String prov    = tfProv.getText().trim();
+            if (prov.isBlank()) throw new IllegalArgumentException("El proveedor es obligatorio.");
             double costo   = Double.parseDouble(tfCosto.getText().trim());
+            Validador.validarPositivo(costo, "Costo");
 
             String id = servicio.registrarFactura(idInm, fecha, conc, prov, costo);
             JOptionPane.showMessageDialog(this,

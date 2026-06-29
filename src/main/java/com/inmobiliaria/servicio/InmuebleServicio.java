@@ -20,6 +20,7 @@ public class InmuebleServicio {
     public String registrarEdificio(String direccion, String numero,
                                     String descripcion, String codigoPostal, double precio,
                                     int numPisos, String nombre) {
+        Validador.validarCodigoPostal(codigoPostal);
         String id = repo.generarIdInmueble();
         Edificio e = new Edificio(id, direccion, numero,
                 descripcion, codigoPostal, precio, numPisos, nombre);
@@ -30,6 +31,13 @@ public class InmuebleServicio {
     public String registrarPiso(String direccion, String numero,
                                 String descripcion, String codigoPostal, double precio,
                                 int numPiso, String tipoEspacio, String descEsp, String edificioId) {
+        Validador.validarCodigoPostal(codigoPostal);
+        if (edificioId != null && !edificioId.isEmpty()) {
+            Inmueble edificioRef = repo.buscarInmueblePorId(edificioId);
+            if (!(edificioRef instanceof Edificio)) {
+                throw new IllegalArgumentException("El ID de edificio \"" + edificioId + "\" no existe o no es un edificio.");
+            }
+        }
         String id = repo.generarIdInmueble();
         Piso p = new Piso(id, direccion, numero,
                 descripcion, codigoPostal, precio,
@@ -41,6 +49,13 @@ public class InmuebleServicio {
     public String registrarLocal(String direccion, String numero,
                                  String descripcion, String codigoPostal, double precio,
                                  int numPiso, String tipoLocal, String descEsp, String edificioId) {
+        Validador.validarCodigoPostal(codigoPostal);
+        if (edificioId != null && !edificioId.isEmpty()) {
+            Inmueble edificioRef = repo.buscarInmueblePorId(edificioId);
+            if (!(edificioRef instanceof Edificio)) {
+                throw new IllegalArgumentException("El ID de edificio \"" + edificioId + "\" no existe o no es un edificio.");
+            }
+        }
         String id = repo.generarIdInmueble();
         Local l = new Local(id, direccion, numero,
                 descripcion, codigoPostal, precio,
@@ -51,6 +66,7 @@ public class InmuebleServicio {
 
     public boolean modificarInmueble(String id, String descripcion,
                                      String codigoPostal, double precio) {
+        Validador.validarCodigoPostal(codigoPostal);
         Inmueble inm = repo.buscarInmueblePorId(id);
         if (inm == null) return false;
         inm.setDescripcion(descripcion);

@@ -3,6 +3,7 @@ package com.inmobiliaria.vista;
 import com.inmobiliaria.modelo.Inmueble;
 import com.inmobiliaria.modelo.MovimientoBancario;
 import com.inmobiliaria.servicio.InmuebleServicio;
+import com.inmobiliaria.util.Validador;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -188,7 +189,9 @@ public class PanelMovimientos extends JPanel {
                     (MovimientoBancario.TipoMovimiento) cmbTipo.getSelectedItem();
             LocalDate fecha   = LocalDate.parse(tfFecha.getText().trim(), FMT);
             double   importe  = Double.parseDouble(tfImporte.getText().trim());
+            Validador.validarPositivo(importe, "Importe");
             String   entidad  = tfEntidad.getText().trim();
+            if (entidad.isBlank()) throw new IllegalArgumentException("La persona o entidad es obligatoria.");
 
             String id = servicio.registrarMovimiento(idInm, tipo, fecha, importe, entidad);
             JOptionPane.showMessageDialog(this,

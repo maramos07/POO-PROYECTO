@@ -2,6 +2,7 @@ package com.inmobiliaria.vista;
 
 import com.inmobiliaria.modelo.*;
 import com.inmobiliaria.servicio.InmuebleServicio;
+import com.inmobiliaria.util.Validador;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -158,7 +159,9 @@ public class DialogoInmueble extends JDialog {
             String num       = validar(txtNumero,    "Número");
             String desc      = validar(txtDescripcion,"Descripción");
             String cp        = validar(txtCodPostal,  "Código Postal");
+            Validador.validarCodigoPostal(cp);
             double precio    = Double.parseDouble(txtPrecio.getText().trim());
+            Validador.validarPositivo(precio, "Precio de Alquiler");
 
             if (inmuebleEditar != null) {
                 // Modo edición: solo actualiza campos modificables
@@ -168,13 +171,16 @@ public class DialogoInmueble extends JDialog {
                 switch (tipo) {
                     case "EDIFICIO" -> {
                         String nombre = txtNombreEdificio.getText().trim();
+                        if (nombre.isBlank()) throw new IllegalArgumentException("El nombre del edificio es obligatorio.");
                         int pisos = Integer.parseInt(txtNumPisosTotales.getText().trim());
                         servicio.registrarEdificio(dir, num, desc, cp, precio, pisos, nombre);
                     }
                     case "PISO" -> {
                         int nPiso   = Integer.parseInt(txtNumPiso.getText().trim());
                         String tEsp = txtTipoEspacio.getText().trim();
+                        if (tEsp.isBlank()) throw new IllegalArgumentException("El tipo de espacio es obligatorio.");
                         String dEsp = txtDescEsp.getText().trim();
+                        if (dEsp.isBlank()) throw new IllegalArgumentException("La descripción específica es obligatoria.");
                         String edId = txtEdificioId.getText().trim();
                         servicio.registrarPiso(dir, num, desc, cp, precio,
                                 nPiso, tEsp, dEsp, edId.isEmpty() ? null : edId);
@@ -182,7 +188,9 @@ public class DialogoInmueble extends JDialog {
                     case "LOCAL" -> {
                         int nPiso   = Integer.parseInt(txtNumPiso.getText().trim());
                         String tLoc = txtTipoEspacio.getText().trim();
+                        if (tLoc.isBlank()) throw new IllegalArgumentException("El tipo de local es obligatorio.");
                         String dEsp = txtDescEsp.getText().trim();
+                        if (dEsp.isBlank()) throw new IllegalArgumentException("La descripción específica es obligatoria.");
                         String edId = txtEdificioId.getText().trim();
                         servicio.registrarLocal(dir, num, desc, cp, precio,
                                 nPiso, tLoc, dEsp, edId.isEmpty() ? null : edId);

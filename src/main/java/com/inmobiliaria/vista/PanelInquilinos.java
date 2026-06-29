@@ -91,7 +91,7 @@ public class PanelInquilinos extends JPanel {
         JTextField fNombre   = campo(); JTextField fCedula  = campo();
         JTextField fEdad     = campo();
         JTextField fContacto = campo();
-        JComboBox<String> cSexo = new JComboBox<>(new String[]{"Masculino", "Femenino", "Otro"});
+        JComboBox<Inquilino.Sexo> cSexo = new JComboBox<>(Inquilino.Sexo.values());
         JComboBox<Inquilino.TipoRespaldo> cRespaldo =
                 new JComboBox<>(Inquilino.TipoRespaldo.values());
 
@@ -115,8 +115,11 @@ public class PanelInquilinos extends JPanel {
             String cedula   = req(fCedula,   "Cédula");
             Validador.validarCedula(cedula);
             int    edad     = Integer.parseInt(fEdad.getText().trim());
-            String sexo     = (String) cSexo.getSelectedItem();
+            Validador.validarEdad(edad);
+            Inquilino.Sexo sexoEnum = (Inquilino.Sexo) cSexo.getSelectedItem();
+            String sexo     = sexoEnum.getDescripcion();
             String contacto = req(fContacto, "Medio de contacto");
+            Validador.validarContacto(contacto);
             Inquilino.TipoRespaldo respaldo =
                     (Inquilino.TipoRespaldo) cRespaldo.getSelectedItem();
 

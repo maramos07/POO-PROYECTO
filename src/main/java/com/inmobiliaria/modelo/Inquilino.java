@@ -9,6 +9,20 @@ import java.io.Serializable;
 public class Inquilino implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    // Sexos válidos
+    public enum Sexo {
+        MASCULINO("Masculino"),
+        FEMENINO("Femenino"),
+        OTRO("Otro");
+
+        private final String descripcion;
+        Sexo(String descripcion) { this.descripcion = descripcion; }
+        public String getDescripcion() { return descripcion; }
+
+        @Override
+        public String toString() { return descripcion; }
+    }
+
     // Tipos de respaldo válidos
     public enum TipoRespaldo {
         NOMINA("Nómina"),
@@ -58,7 +72,17 @@ public class Inquilino implements Serializable {
     public void setEdad(int edad) { this.edad = edad; }
 
     public String getSexo() { return sexo; }
-    public void setSexo(String sexo) { this.sexo = sexo; }
+    public void setSexo(String sexo) {
+        boolean valido = false;
+        for (Sexo s : Sexo.values()) {
+            if (s.getDescripcion().equals(sexo) || s.name().equals(sexo)) {
+                valido = true;
+                break;
+            }
+        }
+        if (!valido) throw new IllegalArgumentException("Sexo no válido.");
+        this.sexo = sexo;
+    }
 
     public String getMedioContacto() { return medioContacto; }
     public void setMedioContacto(String medioContacto) { this.medioContacto = medioContacto; }
