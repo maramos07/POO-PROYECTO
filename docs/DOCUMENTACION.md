@@ -32,7 +32,6 @@ src/main/java/com/inmobiliaria/
 ├── util/
 │   ├── Validador.java               ← Métodos estáticos de validación
 │
-│
 └── vista/                            ← Interfaz gráfica (Swing)
     ├── VentanaPrincipal.java         ← JFrame con pestañas, header, botón salir
     ├── SwingUtil.java               ← Helpers: crearBoton, crearTextField, crearLabel
@@ -44,78 +43,11 @@ src/main/java/com/inmobiliaria/
     └── PanelMovimientos.java         ← Registrar y filtrar movimientos bancarios
 ```
 
----
 
-## 3. Diagrama de clases simplificado
-
-```
-                    ┌──────────────┐
-                    │   Inmueble   │  (abstracta, Serializable)
-                    │──────────────│
-                    │ - id         │
-                    │ - direccion  │
-                    │ - numero     │
-                    │ - descripcion│
-                    │ - codPostal  │
-                    │ - precioAlq  │
-                    │ - disponible │
-                    │ - inquilinoId│
-                    │──────────────│
-                    │ + getTipoInmueble() ── abstracto
-                    └──────┬───────┘
-           ┌───────────────┼───────────────┐
-           │               │               │
-    ┌──────┴──────┐ ┌──────┴──────┐ ┌──────┴──────┐
-    │  Edificio   │ │    Piso     │ │   Local     │
-    │─────────────│ │─────────────│ │─────────────│
-    │ - numPisos  │ │ - numPiso   │ │ - numPiso   │
-    │ - nombreEdif│ │ - tipoEspacio│ │ - tipoLocal │
-    │             │ │ - descEsp   │ │ - descEsp   │
-    │             │ │ - edificioId│ │ - edificioId│
-    └─────────────┘ └─────────────┘ └─────────────┘
-
-
-┌────────────────┐     ┌──────────────────┐     ┌─────────────────────┐
-│   Inquilino    │     │     Alquiler     │     │      Factura        │
-│────────────────│     │──────────────────│     │─────────────────────│
-│ - id           │     │ - id             │     │ - id                │
-│ - nombre       │     │ - inquilinoId    │     │ - fechaEmision      │
-│ - cedula       │     │ - inmuebleId     │     │ - inmuebleId        │
-│ - edad         │     │ - fechaInicio    │     │ - concepto (enum)   │
-│ - sexo (String)│     │ - fechaFin       │     │ - proveedor         │
-│ - medioContacto│     │ - activo         │     │ - costo             │
-│ - tipoRespaldo │     │──────────────────│     └─────────────────────┘
-│────────────────│     │ + finalizar()    │
-│ enum Sexo      │     │ + setFechaInicio │     ┌─────────────────────┐
-│ enum TipoResp. │     └──────────────────┘     │ MovimientoBancario  │
-└────────────────┘                              │─────────────────────│
-                                                │ - id                │
-                                                │ - tipoMovim (enum)  │
-        ┌─────────────────────┐                 │ - inmuebleId        │
-        │   InmuebleServicio  │                 │ - fecha             │
-        │─────────────────────│                 │ - importe           │
-        │ - repo (Singleton)  │                 │ - personaEntidad    │
-        │─────────────────────│                 └─────────────────────┘
-        │ + registrar*()      │
-        │ + modificar*()      │
-        │ + eliminar*()       │         ┌────────────────────┐
-        │ + alquilar()        │         │ RepositorioDatos   │
-        │ + desalquilar()     │         │────────────────────│
-        │ + consultar*()      │         │ + getInstance()    │
-        └─────────────────────┘         │ + CRUD inmuebles   │
-                                        │ + CRUD inquilinos  │
-                                        │ + CRUD facturas    │
-                                        │ + CRUD movimientos │
-                ┌──────────────┐        │ + CRUD alquileres  │
-                │  Validador   │        │ + limpieza huérfanos│
-                │──────────────│        │ + carga/guardado   │
-                │ + validarX() │        └────────────────────┘
-                └──────────────┘
-```
 
 ---
 
-## 4. Los cuatro pilares de POO
+## 3. Los cuatro pilares de POO
 
 ### 4.1 Encapsulamiento
 
@@ -372,7 +304,7 @@ Cada funcionalidad sigue la misma arquitectura en tres capas:
 |---------|---------|
 | **Disparador** | Botón "＋ Nuevo Inmueble" en `PanelInmuebles` (color dorado `COLOR_ACENTO`) |
 | **Vista** | `PanelInmuebles.abrirFormularioNuevo()` → abre `DialogoInmueble(servicio, null)` como modal |
-| **Campos del formulario** | `DialogoInmueble.contruirUI()`: `JComboBox` de tipo (EDIFICIO/PISO/LOCAL), `JTextField` para dirección, código interno, descripción, código postal, precio. Según el tipo seleccionado, se muestran campos adicionales (nombre del edificio + número de pisos, o número de piso + tipo de espacio + descripción específica + ID de edificio opcional) |
+| **Campos del formulario** | `DialogoInmueble.contruirUI()`: `JComboBox` de tipo (EDIFICIO/PISO/LOCAL), `JTextField` para dirección, descripción, código postal, precio. Según el tipo seleccionado, se muestran campos adicionales (nombre del edificio + número de pisos, o número de piso + tipo de espacio + descripción específica + ID de edificio opcional) |
 | **Validación en UI** | `validar()` lanza `IllegalArgumentException` si los campos obligatorios están vacíos. `Validador.validarCodigoPostal()` si solo dígitos y entre 1000-99999. `Validador.validarPositivo()` para precio > 0 |
 | **Validación de edificio** | Si el usuario ingresa un `edificioId`, el servicio valida que ese ID exista y sea `instanceof Edificio` (servicio línea 35-40, 53-58) |
 | **Método del servicio** | `registrarEdificio()`, `registrarPiso()` o `registrarLocal()` según el tipo |
@@ -386,7 +318,7 @@ Cada funcionalidad sigue la misma arquitectura en tres capas:
 ```
 Usuario: hace clic en "＋ Nuevo Inmueble"
 PanelInmuebles → DialogoInmueble(servicio, null)
-Usuario: completa "Dirección: Calle Mayor", "Código Interno: 10",
+Usuario: completa "Dirección: Calle Mayor",
          "Descripción: Piso luminoso", "Código Postal: 28001",
          "Precio: 850", tipo PISO → "Nº piso: 3", "Tipo: Apartamento",
          "Desc. específica: 2 habitaciones", "ID Edificio: INM-00001"
@@ -416,8 +348,8 @@ PanelInmuebles: cargarTabla() — actualiza la tabla
 | **Selección previa** | El usuario debe seleccionar una fila en la tabla. Si no, se muestra "Seleccione un inmueble para editar." |
 | **Vista** | `PanelInmuebles.editarSeleccionado()` → abre `DialogoInmueble(servicio, inmueble)` con sus datos precargados |
 | **Precarga** | `DialogoInmueble.precargarDatos()` setea los `JTextField` con los valores actuales. El tipo de inmueble se bloquea (`cmbTipo.setEnabled(false)`) para evitar cambiar un piso a local |
-| **Campos editables** | Todos: dirección, código interno, descripción, código postal, precio, y los campos específicos del tipo (si se edita un Piso, se puede cambiar el número de piso, tipo de espacio, descripción específica y edificio asociado) |
-| **Servicio** | `servicio.modificarInmueble(id, direccion, numero, descripcion, cp, precio)` actualiza los campos comunes. Luego según el tipo: `modificarPiso()`, `modificarLocal()` o `modificarEdificio()` |
+| **Campos editables** | Todos: dirección, descripción, código postal, precio, y los campos específicos del tipo (si se edita un Piso, se puede cambiar el número de piso, tipo de espacio, descripción específica y edificio asociado) |
+| **Servicio** | `servicio.modificarInmueble(id, direccion, descripcion, cp, precio)` actualiza los campos comunes. Luego según el tipo: `modificarPiso()`, `modificarLocal()` o `modificarEdificio()` |
 | **Persistencia** | `actualizarInmueble()` reemplaza el objeto en el `HashMap` y persiste en `inmuebles.dat` |
 | **Seguridad** | Si se edita el `edificioId` de un Piso/Local, se vuelve a validar que el ID referenciado exista y sea un `Edificio` |
 
@@ -600,19 +532,6 @@ PanelAlquileres: mensaje de éxito, actualizar()
 | **Repo** | `getMovimientosPorInmuebleYPeriodo()` busca con `toLowerCase().contains()` y ordena por fecha ascendente (`Comparator.comparing(MovimientoBancario::getFecha)`) |
 | **Ver Todos** | Botón "Ver Todos" → `cargar(servicio.getTodosMovimientos())` |
 
----
-
-### 6.14 Carga inicial de datos de prueba (`SeedData`)
-
-| Aspecto | Detalle |
-|---------|---------|
-| **Disparador** | `Main.main()` → `SeedData.cargarSiVacio(new InmuebleServicio())` |
-| **Condición** | Solo ejecuta si `servicio.getTodosInmuebles().isEmpty()`. Si ya hay datos, no hace nada |
-| **Qué crea** | 2 edificios, 4 pisos, 2 locales, 4 inquilinos, 2 alquileres, 5 facturas, movimientos automáticos de los alquileres + 1 movimiento extra |
-| **Cómo asocia** | Busca inmuebles e inquilinos por dirección/cédula usando streams y `filter()` |
-| **Mensaje** | "Datos de prueba cargados: X inmuebles, Y inquilinos, Z alquileres, W facturas, V movimientos." |
-
-Para reiniciar los datos de prueba, borrar los archivos de la carpeta `datos/` y reiniciar la aplicación.
 
 ---
 
@@ -671,14 +590,3 @@ Los datos se guardan en la carpeta `datos/` mediante **serialización Java**:
 java -cp build/classes/java/main com.inmobiliaria.Main
 ```
 
-Al primer inicio, si no hay datos, `SeedData` carga automáticamente:
-
-- **2 edificios** (Torre Azul, Centro Comercial Norte)
-- **4 pisos** (apartamento, ático, dúplex, estudio)
-- **2 locales** (comercial, oficina)
-- **4 inquilinos** (Juan, María, Carlos, Laura)
-- **2 alquileres activos** (Juan → apartamento, María → dúplex)
-- **5 facturas** registradas
-- **Movimientos bancarios** generados automáticamente por los alquileres + 1 adicional
-
-Los datos de prueba se pueden borrar eliminando los archivos de la carpeta `datos/`. La próxima ejecución los volverá a crear.
