@@ -102,9 +102,9 @@ public class PanelAlquileres extends JPanel {
         JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 8));
         p.setBackground(VentanaPrincipal.COLOR_FONDO);
 
-        JButton btnAlquilar  = SwingUtil.crearBoton("Alquilar Inmueble",    VentanaPrincipal.COLOR_ACENTO);
-        JButton btnDesalq    = SwingUtil.crearBoton("Desalquilar Inmueble",  new Color(245, 158, 11));
-        JButton btnActualizar= SwingUtil.crearBoton("Actualizar",             new Color(100, 116, 139));
+        JButton btnAlquilar  = SwingUtil.crearBoton("+ Alquilar Inmueble",    VentanaPrincipal.COLOR_ACENTO);
+        JButton btnDesalq    = SwingUtil.crearBoton(" - Desalquilar Inmueble",  new Color(58,  95, 160));
+        JButton btnActualizar= SwingUtil.crearBoton(" ↻ Recargar Página",             new Color(100, 116, 139));
 
         btnAlquilar.addActionListener(e  -> alquilar());
         btnDesalq.addActionListener(e    -> desalquilar());

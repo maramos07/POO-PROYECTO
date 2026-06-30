@@ -17,7 +17,6 @@ public class Local extends Inmueble implements Serializable {
     /**
      * @param id identificador único
      * @param direccion dirección del local
-     * @param numero código interno del local
      * @param descripcion descripción general
      * @param codigoPostal código postal
      * @param precioAlquiler precio de alquiler mensual
@@ -26,11 +25,11 @@ public class Local extends Inmueble implements Serializable {
      * @param descripcionEspecifica descripción adicional del espacio
      * @param edificioId ID del edificio al que pertenece (opcional)
      */
-    public Local(String id, String direccion, String numero,
+    public Local(String id, String direccion,
                  String descripcion, String codigoPostal, double precioAlquiler,
                  int numeroPiso, String tipoLocal,
                  String descripcionEspecifica, String edificioId) {
-        super(id, direccion, numero, descripcion, codigoPostal, precioAlquiler);
+        super(id, direccion, descripcion, codigoPostal, precioAlquiler);
         this.numeroPiso = numeroPiso;
         this.tipoLocal = tipoLocal;
         this.descripcionEspecifica = descripcionEspecifica;

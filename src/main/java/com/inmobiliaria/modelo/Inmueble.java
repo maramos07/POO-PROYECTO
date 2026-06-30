@@ -11,18 +11,15 @@ public abstract class Inmueble implements Serializable {
 
     private String id;
     private String direccion;
-    private String numero; // Identificador interno del inmueble (ej. número de matrícula o código de oficina). No confundir con el número de piso en subclases.
     private String descripcion;
     private String codigoPostal;
     private double precioAlquiler;
     private boolean disponible;
     private String inquilinoId; // null si está disponible
 
-    public Inmueble(String id, String direccion, String numero,
-                    String descripcion, String codigoPostal, double precioAlquiler) {
+    public Inmueble(String id, String direccion, String descripcion, String codigoPostal, double precioAlquiler) {
         this.id = id;
         this.direccion = direccion;
-        this.numero = numero;
         this.descripcion = descripcion;
         this.codigoPostal = codigoPostal;
         this.precioAlquiler = precioAlquiler;
@@ -47,11 +44,6 @@ public abstract class Inmueble implements Serializable {
     public String getDireccion() { return direccion; }
     /** @param direccion nueva dirección */
     public void setDireccion(String direccion) { this.direccion = direccion; }
-
-    /** @return código interno del inmueble */
-    public String getNumero() { return numero; }
-    /** @param numero nuevo código interno */
-    public void setNumero(String numero) { this.numero = numero; }
 
     /** @return descripción del inmueble */
     public String getDescripcion() { return descripcion; }
@@ -80,8 +72,8 @@ public abstract class Inmueble implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("[%s] %s (Cód: %s) | %s | %s | $%.2f | %s",
-                getTipoInmueble(), direccion, numero, descripcion,
+        return String.format("[%s] %s | %s | %s | $%.2f | %s",
+                getTipoInmueble(), direccion, descripcion,
                 codigoPostal, precioAlquiler,
                 disponible ? "DISPONIBLE" : "OCUPADO");
     }

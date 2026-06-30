@@ -1,7 +1,5 @@
 package com.inmobiliaria;
 
-import com.inmobiliaria.servicio.InmuebleServicio;
-import com.inmobiliaria.util.SeedData;
 import com.inmobiliaria.vista.VentanaPrincipal;
 
 import javax.swing.*;
@@ -20,9 +18,6 @@ public class Main {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception ignored) {}
-
-        // Cargar datos de prueba si el repositorio está vacío
-        SeedData.cargarSiVacio(new InmuebleServicio());
 
         // Iniciar la interfaz en el hilo de eventos de Swing
         SwingUtilities.invokeLater(VentanaPrincipal::new);

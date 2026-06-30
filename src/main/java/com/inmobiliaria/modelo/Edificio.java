@@ -16,17 +16,16 @@ public class Edificio extends Inmueble implements Serializable {
     /**
      * @param id identificador único
      * @param direccion dirección del edificio
-     * @param numero código interno del edificio
      * @param descripcion descripción general
      * @param codigoPostal código postal
      * @param precioAlquiler precio de alquiler mensual
      * @param numeroPisos cantidad total de pisos
      * @param nombreEdificio nombre del edificio
      */
-    public Edificio(String id, String direccion, String numero,
+    public Edificio(String id, String direccion,
                     String descripcion, String codigoPostal,
                     double precioAlquiler, int numeroPisos, String nombreEdificio) {
-        super(id, direccion, numero, descripcion, codigoPostal, precioAlquiler);
+        super(id, direccion, descripcion, codigoPostal, precioAlquiler);
         this.numeroPisos = numeroPisos;
         this.nombreEdificio = nombreEdificio;
     }

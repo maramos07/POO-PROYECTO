@@ -17,7 +17,6 @@ public class Piso extends Inmueble implements Serializable {
     /**
      * @param id identificador único
      * @param direccion dirección del piso
-     * @param numero código interno del piso
      * @param descripcion descripción general
      * @param codigoPostal código postal
      * @param precioAlquiler precio de alquiler mensual
@@ -26,11 +25,11 @@ public class Piso extends Inmueble implements Serializable {
      * @param descripcionEspecifica descripción adicional del espacio
      * @param edificioId ID del edificio al que pertenece (opcional)
      */
-    public Piso(String id, String direccion, String numero,
+    public Piso(String id, String direccion,
                 String descripcion, String codigoPostal, double precioAlquiler,
                 int numeroPiso, String tipoEspacio,
                 String descripcionEspecifica, String edificioId) {
-        super(id, direccion, numero, descripcion, codigoPostal, precioAlquiler);
+        super(id, direccion, descripcion, codigoPostal, precioAlquiler);
         this.numeroPiso = numeroPiso;
         this.tipoEspacio = tipoEspacio;
         this.descripcionEspecifica = descripcionEspecifica;

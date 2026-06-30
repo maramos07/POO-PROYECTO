@@ -22,7 +22,7 @@ public class DialogoInmueble extends JDialog {
 
     // Campos comunes
     private JComboBox<String> cmbTipo;
-    private JTextField txtDireccion, txtNumero, txtDescripcion,
+    private JTextField txtDireccion, txtDescripcion,
             txtCodPostal, txtPrecio;
 
     // Campos extra (Piso/Local)
@@ -65,7 +65,7 @@ public class DialogoInmueble extends JDialog {
         pTipo.add(cmbTipo);
 
         // Campos comunes
-        txtDireccion  = campo(); txtNumero    = campo();
+        txtDireccion  = campo();
         txtDescripcion= campo(); txtCodPostal = campo();
         txtPrecio     = campo();
 
@@ -85,7 +85,6 @@ public class DialogoInmueble extends JDialog {
         contenido.add(pTipo);
         contenido.add(Box.createVerticalStrut(6));
         agregarFila(contenido, "Dirección:", txtDireccion);
-        agregarFila(contenido, "Código Interno:", txtNumero);
         agregarFila(contenido, "Descripción:", txtDescripcion);
         agregarFila(contenido, "Código Postal:", txtCodPostal);
         agregarFila(contenido, "Precio de Alquiler ($):", txtPrecio);
@@ -118,7 +117,6 @@ public class DialogoInmueble extends JDialog {
 
     private void precargarDatos(Inmueble inm) {
         txtDireccion.setText(inm.getDireccion());
-        txtNumero.setText(inm.getNumero());
         txtDescripcion.setText(inm.getDescripcion());
         txtCodPostal.setText(inm.getCodigoPostal());
         txtPrecio.setText(String.valueOf(inm.getPrecioAlquiler()));
@@ -157,7 +155,6 @@ public class DialogoInmueble extends JDialog {
         try {
             String tipo      = (String) cmbTipo.getSelectedItem();
             String dir       = validar(txtDireccion, "Dirección");
-            String num       = validar(txtNumero,    "Número");
             String desc      = validar(txtDescripcion,"Descripción");
             String cp        = validar(txtCodPostal,  "Código Postal");
             Validador.validarCodigoPostal(cp);
@@ -166,7 +163,7 @@ public class DialogoInmueble extends JDialog {
 
             if (inmuebleEditar != null) {
                 // Modo edición: actualiza todos los campos
-                servicio.modificarInmueble(inmuebleEditar.getId(), dir, num, desc, cp, precio);
+                servicio.modificarInmueble(inmuebleEditar.getId(), dir, desc, cp, precio);
                 Inmueble inm = inmuebleEditar;
                 if (inm instanceof Edificio) {
                     String nombre = txtNombreEdificio.getText().trim();
@@ -197,7 +194,7 @@ public class DialogoInmueble extends JDialog {
                         String nombre = txtNombreEdificio.getText().trim();
                         if (nombre.isBlank()) throw new IllegalArgumentException("El nombre del edificio es obligatorio.");
                         int pisos = Integer.parseInt(txtNumPisosTotales.getText().trim());
-                        servicio.registrarEdificio(dir, num, desc, cp, precio, pisos, nombre);
+                        servicio.registrarEdificio(dir, desc, cp, precio, pisos, nombre);
                     }
                     case "PISO" -> {
                         int nPiso   = Integer.parseInt(txtNumPiso.getText().trim());
@@ -206,7 +203,7 @@ public class DialogoInmueble extends JDialog {
                         String dEsp = txtDescEsp.getText().trim();
                         if (dEsp.isBlank()) throw new IllegalArgumentException("La descripción específica es obligatoria.");
                         String edId = txtEdificioId.getText().trim();
-                        servicio.registrarPiso(dir, num, desc, cp, precio,
+                        servicio.registrarPiso(dir, desc, cp, precio,
                                 nPiso, tEsp, dEsp, edId.isEmpty() ? null : edId);
                     }
                     case "LOCAL" -> {
@@ -216,7 +213,7 @@ public class DialogoInmueble extends JDialog {
                         String dEsp = txtDescEsp.getText().trim();
                         if (dEsp.isBlank()) throw new IllegalArgumentException("La descripción específica es obligatoria.");
                         String edId = txtEdificioId.getText().trim();
-                        servicio.registrarLocal(dir, num, desc, cp, precio,
+                        servicio.registrarLocal(dir, desc, cp, precio,
                                 nPiso, tLoc, dEsp, edId.isEmpty() ? null : edId);
                     }
                 }

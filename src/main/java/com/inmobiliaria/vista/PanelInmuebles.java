@@ -23,7 +23,7 @@ public class PanelInmuebles extends JPanel {
     private JLabel lblResultado;
 
     private static final String[] COLUMNAS = {
-            "ID", "Tipo", "Dirección", "Cód. Calle", "Descripción",
+            "ID", "Tipo", "Dirección", "Descripción",
             "Cód. Postal", "Precio Alquiler", "Estado"
     };
 
@@ -98,7 +98,7 @@ public class PanelInmuebles extends JPanel {
                                                            boolean sel, boolean foc, int row, int col) {
                 Component c = super.getTableCellRendererComponent(t, val, sel, foc, row, col);
                 if (!sel) {
-                    String estado = (String) t.getValueAt(row, 7);
+                    String estado = (String) t.getValueAt(row, 6);
                     c.setBackground("DISPONIBLE".equals(estado)
                             ? new Color(240, 236, 225)   // beige cálido — disponible
                             : new Color(220, 228, 242));  // azul muy suave — ocupado
@@ -117,7 +117,7 @@ public class PanelInmuebles extends JPanel {
         for (Inmueble inm : lista) {
             modeloTabla.addRow(new Object[]{
                     inm.getId(), inm.getTipoInmueble(), inm.getDireccion(),
-                    inm.getNumero(), inm.getDescripcion(),
+                    inm.getDescripcion(),
                     inm.getCodigoPostal(),
                     String.format("$%.2f", inm.getPrecioAlquiler()),
                     inm.isDisponible() ? "DISPONIBLE" : "OCUPADO"

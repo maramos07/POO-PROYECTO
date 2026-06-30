@@ -178,7 +178,7 @@ public class PanelMovimientos extends JPanel {
         }
 
         String[] opInm = inmuebles.stream()
-                .map(i -> i.getId() + " — " + i.getDireccion() + " " + i.getNumero())
+                .map(i -> i.getId() + " — " + i.getDireccion())
                 .toArray(String[]::new);
 
         JComboBox<String> cmbInm  = new JComboBox<>(opInm);

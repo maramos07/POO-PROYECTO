@@ -29,7 +29,6 @@ public class InmuebleServicio {
     /**
      * Registra un nuevo edificio.
      * @param direccion  dirección del edificio
-     * @param numero     número de la calle
      * @param descripcion descripción del inmueble
      * @param codigoPostal código postal del inmueble
      * @param precio     precio de alquiler
@@ -38,12 +37,12 @@ public class InmuebleServicio {
      * @return ID del edificio registrado
      * @throws IllegalArgumentException si el código postal no es válido
      */
-    public String registrarEdificio(String direccion, String numero,
+    public String registrarEdificio(String direccion,
                                     String descripcion, String codigoPostal, double precio,
                                     int numPisos, String nombre) {
         Validador.validarCodigoPostal(codigoPostal);
         String id = repo.generarIdInmueble();
-        Edificio e = new Edificio(id, direccion, numero,
+        Edificio e = new Edificio(id, direccion,
                 descripcion, codigoPostal, precio, numPisos, nombre);
         repo.agregarInmueble(e);
         return id;
@@ -52,7 +51,6 @@ public class InmuebleServicio {
     /**
      * Registra un nuevo piso dentro de un edificio.
      * @param direccion   dirección del piso
-     * @param numero      número de la calle
      * @param descripcion descripción del inmueble
      * @param codigoPostal código postal
      * @param precio      precio de alquiler
@@ -64,7 +62,7 @@ public class InmuebleServicio {
      * @throws IllegalArgumentException si el código postal no es válido,
      *                                  o el ID de edificio no existe o no es un Edificio
      */
-    public String registrarPiso(String direccion, String numero,
+    public String registrarPiso(String direccion,
                                 String descripcion, String codigoPostal, double precio,
                                 int numPiso, String tipoEspacio, String descEsp, String edificioId) {
         Validador.validarCodigoPostal(codigoPostal);
@@ -75,8 +73,7 @@ public class InmuebleServicio {
             }
         }
         String id = repo.generarIdInmueble();
-        Piso p = new Piso(id, direccion, numero,
-                descripcion, codigoPostal, precio,
+        Piso p = new Piso(id, direccion, descripcion, codigoPostal, precio,
                 numPiso, tipoEspacio, descEsp, edificioId);
         repo.agregarInmueble(p);
         return id;
@@ -85,7 +82,6 @@ public class InmuebleServicio {
     /**
      * Registra un nuevo local dentro de un edificio.
      * @param direccion   dirección del local
-     * @param numero      número de la calle
      * @param descripcion descripción del inmueble
      * @param codigoPostal código postal
      * @param precio      precio de alquiler
@@ -97,7 +93,7 @@ public class InmuebleServicio {
      * @throws IllegalArgumentException si el código postal no es válido,
      *                                  o el ID de edificio no existe o no es un Edificio
      */
-    public String registrarLocal(String direccion, String numero,
+    public String registrarLocal(String direccion,
                                  String descripcion, String codigoPostal, double precio,
                                  int numPiso, String tipoLocal, String descEsp, String edificioId) {
         Validador.validarCodigoPostal(codigoPostal);
@@ -108,7 +104,7 @@ public class InmuebleServicio {
             }
         }
         String id = repo.generarIdInmueble();
-        Local l = new Local(id, direccion, numero,
+        Local l = new Local(id, direccion,
                 descripcion, codigoPostal, precio,
                 numPiso, tipoLocal, descEsp, edificioId);
         repo.agregarInmueble(l);
@@ -119,20 +115,18 @@ public class InmuebleServicio {
      * Modifica los datos generales de cualquier inmueble.
      * @param id          ID del inmueble a modificar
      * @param direccion   nueva dirección
-     * @param numero      nuevo número de calle
      * @param descripcion nueva descripción
      * @param codigoPostal nuevo código postal
      * @param precio      nuevo precio de alquiler
      * @return true si se modificó correctamente, false si el ID no existe
      * @throws IllegalArgumentException si el código postal no es válido
      */
-    public boolean modificarInmueble(String id, String direccion, String numero,
+    public boolean modificarInmueble(String id, String direccion,
                                      String descripcion, String codigoPostal, double precio) {
         Validador.validarCodigoPostal(codigoPostal);
         Inmueble inm = repo.buscarInmueblePorId(id);
         if (inm == null) return false;
         inm.setDireccion(direccion);
-        inm.setNumero(numero);
         inm.setDescripcion(descripcion);
         inm.setCodigoPostal(codigoPostal);
         inm.setPrecioAlquiler(precio);
