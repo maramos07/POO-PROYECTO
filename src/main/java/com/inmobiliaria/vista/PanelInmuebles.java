@@ -8,6 +8,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.*;
 import java.awt.*;
 import java.util.List;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * Panel para CRUD completo de inmuebles (Edificios, Pisos, Locales).
@@ -109,6 +111,17 @@ public class PanelInmuebles extends JPanel {
 
         JScrollPane sp = new JScrollPane(tabla);
         sp.setBorder(BorderFactory.createLineBorder(new Color(201, 169, 110)));
+
+        // Doble clic sobre una fila: abre el detalle completo del inmueble
+        tabla.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    verDetalleSeleccionado();
+                }
+            }
+        });
+
         return sp;
     }
 
@@ -134,12 +147,16 @@ public class PanelInmuebles extends JPanel {
         p.setBackground(VentanaPrincipal.COLOR_FONDO);
 
         JButton btnNuevo   = SwingUtil.crearBoton("＋ Nuevo Inmueble", VentanaPrincipal.COLOR_ACENTO);
+        JButton btnVer     = SwingUtil.crearBoton("👁 Ver Detalle",     VentanaPrincipal.COLOR_PRIMARIO);
         JButton btnEditar  = SwingUtil.crearBoton("✏ Editar",          VentanaPrincipal.COLOR_SECUNDARIO);
         JButton btnElim    = SwingUtil.crearBoton("🗑 Eliminar",        VentanaPrincipal.COLOR_ERROR);
 
         btnNuevo.addActionListener(e -> abrirFormularioNuevo());
+        btnVer.addActionListener(e -> verDetalleSeleccionado());
         btnEditar.addActionListener(e -> editarSeleccionado());
         btnElim.addActionListener(e -> eliminarSeleccionado());
+
+        p.add(btnNuevo); p.add(btnVer); p.add(btnEditar); p.add(btnElim);
 
         p.add(btnNuevo); p.add(btnEditar); p.add(btnElim);
         return p;
@@ -152,6 +169,58 @@ public class PanelInmuebles extends JPanel {
                 (JFrame) SwingUtilities.getWindowAncestor(this), servicio, null);
         dlg.setVisible(true);
         if (dlg.isGuardado()) cargarTabla(servicio.getTodosInmuebles());
+    }
+
+    private void verDetalleSeleccionado() {
+        int fila = tabla.getSelectedRow();
+        if (fila < 0) { SwingUtil.mostrarAviso(this, "Seleccione un inmueble para ver su detalle."); return; }
+        String id = (String) modeloTabla.getValueAt(fila, 0);
+        Inmueble inm = servicio.buscarPorId(id);
+        if (inm == null) return;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Dirección: ").append(inm.getDireccion()).append("\n");
+        sb.append("Descripción: ").append(inm.getDescripcion()).append("\n");
+        sb.append("Código Postal: ").append(inm.getCodigoPostal()).append("\n");
+        sb.append(String.format("Precio de Alquiler: $%.2f%n", inm.getPrecioAlquiler()));
+        sb.append("Estado: ").append(inm.isDisponible() ? "DISPONIBLE" : "OCUPADO").append("\n");
+
+        if (!inm.isDisponible() && inm.getInquilinoId() != null) {
+            Inquilino inq = servicio.buscarInquilinoPorId(inm.getInquilinoId());
+            sb.append("Inquilino actual: ")
+                    .append(inq != null ? inq.getNombre() + " (" + inq.getId() + ")" : inm.getInquilinoId())
+                    .append("\n");
+        }
+
+        if (inm instanceof Edificio e) {
+            sb.append("Nombre del edificio: ").append(e.getNombreEdificio()).append("\n");
+            sb.append("Número total de pisos: ").append(e.getNumeroPisos()).append("\n");
+        } else if (inm instanceof Piso p) {
+            sb.append("Número de piso: ").append(p.getNumeroPiso()).append("\n");
+            sb.append("Tipo de espacio: ").append(p.getTipoEspacio()).append("\n");
+            sb.append("Descripción específica: ").append(p.getDescripcionEspecifica()).append("\n");
+            sb.append("Edificio al que pertenece: ").append(textoEdificio(p.getEdificioId())).append("\n");
+        } else if (inm instanceof Local l) {
+            sb.append("Número de piso: ").append(l.getNumeroPiso()).append("\n");
+            sb.append("Tipo de local: ").append(l.getTipoLocal()).append("\n");
+            sb.append("Descripción específica: ").append(l.getDescripcionEspecifica()).append("\n");
+            sb.append("Edificio al que pertenece: ").append(textoEdificio(l.getEdificioId())).append("\n");
+        }
+
+        JTextArea area = new JTextArea(sb.toString());
+        area.setEditable(false);
+        area.setFont(VentanaPrincipal.FUENTE_NORMAL);
+        area.setBackground(VentanaPrincipal.COLOR_FONDO);
+
+        JOptionPane.showMessageDialog(this, area,
+                "Detalle — " + inm.getTipoInmueble() + " " + inm.getId(),
+                JOptionPane.PLAIN_MESSAGE);
+    }
+
+    private String textoEdificio(String edificioId) {
+        if (edificioId == null || edificioId.isEmpty()) return "— (independiente)";
+        Inmueble edif = servicio.buscarPorId(edificioId);
+        return (edif instanceof Edificio e) ? e.getNombreEdificio() + " (" + e.getId() + ")" : edificioId;
     }
 
     private void editarSeleccionado() {

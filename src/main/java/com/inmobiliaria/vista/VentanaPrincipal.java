@@ -19,12 +19,8 @@ public class VentanaPrincipal extends JFrame {
     // ── Paleta corporativa Inmobiliarios ────────────────────────
     public static final Color COLOR_PRIMARIO    = new Color(30,  46,  82);   // Azul marino oscuro
     public static final Color COLOR_SECUNDARIO  = new Color(58,  95, 160);   // Azul medio
-    public static final Color COLOR_TERCIARIO   = new Color(107,155, 210);   // Azul claro
     public static final Color COLOR_ACENTO      = new Color(201,169, 110);   // Dorado/beige oscuro
-    public static final Color COLOR_ACENTO_CLARO= new Color(232,213,176);   // Beige claro
     public static final Color COLOR_FONDO       = new Color(248,247,244);    // Blanco cálido
-    public static final Color COLOR_TEXTO       = new Color(30,  46,  82);   // Marino para texto
-    public static final Color COLOR_EXITO       = new Color(58,  95, 160);   // Azul medio como éxito
     public static final Color COLOR_ERROR       = new Color(180,  50,  50);  // Rojo sobrio
 
     public static final Font  FUENTE_SUBTITULO  = new Font("Helvetica", Font.BOLD,  14);
@@ -77,7 +73,6 @@ public class VentanaPrincipal extends JFrame {
         contenido.setOpaque(false);
         contenido.setBorder(BorderFactory.createEmptyBorder(16, 28, 16, 28));
 
-        // Marca ESCA
         JLabel marca = new JLabel("Sistema de Gestión Inmobilaria");
         marca.setFont(new Font("Impact", Font.PLAIN,28));
         marca.setForeground(COLOR_ACENTO);
@@ -116,8 +111,8 @@ public class VentanaPrincipal extends JFrame {
         tp.setBackground(COLOR_FONDO);
 
         tp.addTab("⌂ Inmuebles",   null, new PanelInmuebles(servicio),   "Gestionar inmuebles");
-        tp.addTab(" Inquilinos",  null, new PanelInquilinos(servicio),  "Gestionar inquilinos");
-        tp.addTab(" Alquileres",  null, new PanelAlquileres(servicio),  "Alquilar y desalquilar");
+        tp.addTab("° Inquilinos",  null, new PanelInquilinos(servicio),  "Gestionar inquilinos");
+        tp.addTab("⌂ Alquileres",  null, new PanelAlquileres(servicio),  "Alquilar y desalquilar");
         tp.addTab("$ Facturas",    null, new PanelFacturas(servicio),    "Registrar gastos");
         tp.addTab("✎ Movimientos", null, new PanelMovimientos(servicio), "Movimientos bancarios");
 
