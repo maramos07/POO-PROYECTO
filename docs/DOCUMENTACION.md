@@ -31,7 +31,7 @@ src/main/java/com/inmobiliaria/
 │
 ├── util/
 │   ├── Validador.java               ← Métodos estáticos de validación
-│   └── SeedData.java                 ← Carga datos de prueba al primer inicio
+│
 │
 └── vista/                            ← Interfaz gráfica (Swing)
     ├── VentanaPrincipal.java         ← JFrame con pestañas, header, botón salir
@@ -127,7 +127,6 @@ Todos los atributos de las clases del modelo son **privados** (`private`). El ac
 // Inmueble.java — todos los campos privados
 private String id;
 private String direccion;
-private String numero;
 private boolean disponible;
 // ...
 
@@ -209,7 +208,7 @@ Cada subclase comparte los atributos de `Inmueble` (dirección, precio, código 
 ```java
 // Edificio.java
 public Edificio(...) {
-    super(id, direccion, numero, descripcion, codigoPostal, precioAlquiler);
+    super(id, direccion, descripcion, codigoPostal, precioAlquiler);
     this.numeroPisos = numeroPisos;
     this.nombreEdificio = nombreEdificio;
 }
@@ -230,8 +229,8 @@ private Map<String, Inmueble> inmuebles = new HashMap<>();
 // En tiempo de ejecución, cada objeto responde con su propio toString() y getTipoInmueble()
 for (Inmueble inm : inmuebles.values()) {
     System.out.println(inm.toString());
-    // Edificio → "[EDIFICIO] Calle Mayor (Cód: 1) | ... | Nombre: Torre Azul | Pisos: 10"
-    // Piso     → "[PISO] Calle Luna (Cód: 22) | ... | Piso Nº1 | Tipo: Duplex"
+    // Edificio → "[EDIFICIO] Calle Mayor | ... | Nombre: Torre Azul | Pisos: 10"
+    // Piso     → "[PISO] Calle Luna | ... | Piso Nº1 | Tipo: Duplex"
 }
 ```
 
@@ -278,7 +277,6 @@ Cada clase tiene una sola razón para cambiar:
 | `RepositorioDatos` | Persistir y recuperar datos (Singleton) |
 | `InmuebleServicio` | Aplicar reglas de negocio y validaciones |
 | `Validador` | Validar formatos y reglas de entrada |
-| `SeedData` | Cargar datos de prueba |
 | `SwingUtil` | Crear componentes Swing con el estilo corporativo |
 | `PanelInmuebles` | Interfaz para gestionar inmuebles |
 | `PanelInquilinos` | Interfaz para gestionar inquilinos |
