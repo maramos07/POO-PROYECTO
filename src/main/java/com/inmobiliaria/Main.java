@@ -1,3 +1,10 @@
+/**
+ * Integrantes del proyecto
+ * Maria Ramos Naizir
+ * Fabio Perez Ruiz
+ * Karla Marcela Tom Cabarcas
+ */
+
 package com.inmobiliaria;
 
 import com.inmobiliaria.vista.VentanaPrincipal;
