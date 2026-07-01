@@ -102,7 +102,8 @@ Internamente mantiene:
 - Dos colecciones indexadas por ID (`Map<String, Inmueble>` y `Map<String, Inquilino>`) para acceso rápido por clave.
 - Tres listas (`List<Factura>`, `List<MovimientoBancario>`, `List<Alquiler>`) para entidades que no requieren acceso indexado frecuente por ID.
 - Cinco contadores enteros independientes, uno por tipo de entidad, usados para generar identificadores legibles y únicos con formato `PREFIJO-00001`.
-  Expone métodos de alta, baja, modificación y consulta (CRUD) para cada tipo de entidad, y tras cada operación de escritura invoca el método de guardado correspondiente, de forma que el estado en disco nunca queda desincronizado con el estado en memoria. También expone operaciones de "limpieza de huérfanos" (`eliminarFacturasDeInmueble`, `eliminarMovimientosDeInmueble`, `eliminarAlquileresDeInmueble`), utilizadas cuando se elimina un inmueble, para mantener la integridad referencial pese a no usar una base de datos relacional con claves foráneas.
+- Expone métodos de alta, baja, modificación y consulta (CRUD) para cada tipo de entidad, y tras cada operación de escritura invoca el método de guardado correspondiente, de forma que el estado en disco nunca queda desincronizado con el estado en memoria.
+- También expone operaciones de "limpieza de huérfanos" (`eliminarFacturasDeInmueble`, `eliminarMovimientosDeInmueble`, `eliminarAlquileresDeInmueble`), utilizadas cuando se elimina un inmueble, para mantener la integridad referencial pese a no usar una base de datos relacional con claves foráneas.
 
 ### 3.7 `InmuebleServicio` (paquete `servicio`)
 
@@ -751,6 +752,10 @@ A diferencia de lo indicado en versiones anteriores de esta documentación, el d
 ### 10.10 Patrón Singleton aplicado a `RepositorioDatos`
 
 Aunque no se representa con una flecha de relación entre dos clases distintas, el compartimento de atributos de `RepositorioDatos` en el diagrama incluye explícitamente `-instancia: RepositorioDatos` (una referencia estática a sí misma) y el compartimento de operaciones incluye `+getInstance(): RepositorioDatos`, evidenciando el patrón Singleton: una relación reflexiva de la clase consigo misma que garantiza un único punto de verdad para los datos en memoria durante toda la ejecución de la aplicación.
+
+### 10.11 Dependencia Main ···> VentanaPrincipal
+
+Se incorporó al diagrama la clase Main (punto de entrada de la aplicación, con su único método +main(args: String[]): void) y una flecha discontinua de *dependencia* hacia VentanaPrincipal. Se modela como dependencia y no como asociación, agregación o composición porque Main no mantiene una referencia permanente a la ventana: dentro de main() simplemente se instancia VentanaPrincipal de forma local (típicamente vía SwingUtilities.invokeLater(...)) y se la hace visible, sin que exista un atributo -ventana: VentanaPrincipal en ninguna parte. Esto es justamente lo que la dependencia representa en UML: el uso puntual de una clase en el cuerpo de un método, sin conservar una relación estructural duradera.
 
 ---
 ## 11. Dificultades encontradas durante el desarrollo
