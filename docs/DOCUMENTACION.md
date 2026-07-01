@@ -81,6 +81,7 @@ Representa a la persona que puede arrendar un inmueble. No hereda de ninguna cla
 
 - **`Sexo`** (`MASCULINO`, `FEMENINO`, `OTRO`): cada valor lleva asociada una descripción legible en español, mostrada en la interfaz mediante `toString()` sobrescrito.
 - **`TipoRespaldo`** (`NOMINA`, `AVAL_BANCARIO`, `CONTRATO_TRABAJO`, `AVAL_PERSONA`): describe el respaldo económico que presenta el inquilino para poder alquilar.
+
   Particularidad de diseño: el setter `setSexo(String)` valida que el valor recibido coincida con la descripción o el nombre de alguno de los valores del `enum Sexo`, lanzando `IllegalArgumentException` en caso contrario. Esto añade una capa de **validación de invariantes** directamente en el modelo, reforzando el encapsulamiento (no basta con tener atributos privados; también se protege la coherencia de su contenido).
 
 ### 3.4 `Alquiler` (paquete `modelo`)
