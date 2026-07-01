@@ -17,6 +17,17 @@ facturas y movimientos bancarios.
 # o directo:
 java -cp build/classes/java/main com.inmobiliaria.Main
 ```
+## Cómo abrir el proyecto en un IDE
+
+El proyecto usa **Gradle** como sistema de build. Lo más simple es abrir la carpeta raíz del proyecto (donde está `build.gradle`) directamente, sin crear un proyecto Java nuevo desde cero:
+
+- **IntelliJ IDEA**: `File → Open` sobre la carpeta raíz y listo — IntelliJ detecta el `build.gradle` automáticamente (soporte Gradle incluido de fábrica) y sincroniza el proyecto sin pasos adicionales.
+- **NetBeans** (12+): `File → Open Project...` y selecciona la carpeta raíz. NetBeans también reconoce el `build.gradle` automáticamente y descarga las dependencias.
+- **Eclipse**: necesita el plugin *Buildship* para reconocer proyectos Gradle (viene incluido en "Eclipse IDE for Java Developers", pero si no lo tienes, instálalo desde `Help → Eclipse Marketplace`). Luego: `File → Import → Gradle → Existing Gradle Project`.
+
+**Importante:** no crees un "Java Project" / "Java Application" en blanco y copies el código adentro — el IDE no resolverá las dependencias ni respetará la estructura `src/main/java` correctamente. Siempre se debe **abrir/importar como proyecto Gradle existente**.
+
+Requisitos previos: JDK 17 o superior configurado en el IDE, y conexión a internet la primera vez (para que Gradle descargue el wrapper y las dependencias).
 
 ## Estructura del proyecto
 
