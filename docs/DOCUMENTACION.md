@@ -72,6 +72,7 @@ Las tres heredan de `Inmueble` y representan especializaciones del concepto gene
 - **`Piso`**: añade `numeroPiso`, `tipoEspacio` (Apartamento, Ático, Dúplex, etc.), `descripcionEspecifica` y `edificioId` (referencia opcional al edificio contenedor). Implementa `getTipoInmueble()` devolviendo `"PISO"`.
 - **`Local`**: estructuralmente análogo a `Piso`, pero orientado a espacios comerciales/oficinas (`tipoLocal` en lugar de `tipoEspacio`). Implementa `getTipoInmueble()` devolviendo `"LOCAL"`.
 - **`Edificio`**: añade `numeroPisos` (cantidad total de plantas) y `nombreEdificio`. Implementa `getTipoInmueble()` devolviendo `"EDIFICIO"`. A diferencia de `Piso` y `Local`, un `Edificio` no tiene `edificioId`, ya que actúa como contenedor de otros inmuebles, no como un inmueble contenido.
+
 Las tres subclases sobrescriben `toString()`, concatenando la representación heredada de `Inmueble` con sus atributos propios, lo que demuestra el uso combinado de **herencia** y **polimorfismo** de manera consistente en todo el modelo.
 
 ### 3.3 `Inquilino` (paquete `modelo`)
