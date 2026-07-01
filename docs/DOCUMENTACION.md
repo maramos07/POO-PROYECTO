@@ -717,7 +717,8 @@ El diagrama distingue claramente, mediante flechas discontinuas de **dependencia
 - `Factura` **depende de** `«enumeration» ConceptoFactura`.
 - `Inquilino` **depende de** `«enumeration» Sexo` y de `«enumeration» TipoRespaldo`.
 - `MovimientoBancario` **depende de** `«enumeration» TipoMovimiento`.
-  Estas dependencias (en lugar de asociaciones) reflejan que las enumeraciones son tipos de valor inmutables usados como atributo, no entidades con identidad propia ni ciclo de vida independiente.
+
+Estas dependencias (en lugar de asociaciones) reflejan que las enumeraciones son tipos de valor inmutables usados como atributo, no entidades con identidad propia ni ciclo de vida independiente.
 
 ### 10.6 Relación `InmuebleServicio` ↔ `RepositorioDatos` ↔ `Inmueble`/`Inquilino`
 
