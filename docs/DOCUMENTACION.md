@@ -813,3 +813,12 @@ El proyecto usa *Gradle* como sistema de build. Lo más simple es abrir la carpe
 *Importante:* no crees un "Java Project" / "Java Application" en blanco y copies el código adentro — el IDE no resolverá las dependencias ni respetará la estructura src/main/java correctamente. Siempre se debe *abrir/importar como proyecto Gradle existente*.
 
 Requisitos previos: JDK 17 o superior configurado en el IDE, y conexión a internet la primera vez (para que Gradle descargue el wrapper y las dependencias).
+
+### 🛠️ Solución de problemas comunes en NetBeans
+
+Si al abrir el proyecto en NetBeans encuentras errores de sincronización o no reconoce las librerías, aplica estos ajustes:
+
+1. **Configurar el Gradle Wrapper:** Ve al menú superior `Tools` → `Options` → `Java` → `Gradle`. En **Gradle Distribution**, selecciona **"Wrapper (Recommended)"**. Haz clic en *Apply* y *OK*.
+2. **Forzar la recarga:** En la pestaña *Projects* (a la izquierda), haz clic derecho sobre el nombre del proyecto y selecciona **Reload Project** (o *Prime Build*) para forzar la descarga de dependencias.
+3. **Verificar el JDK:** Haz clic derecho en el proyecto → `Properties` → `Build` → `Compile`. En **Java Platform**, asegúrate de que esté seleccionado tu JDK 17 o superior.
+4. **Limpieza profunda (La vieja confiable):** Si salen errores extraños, haz clic derecho y dale a **Clean and Build**. Si persiste, cierra NetBeans, borra las carpetas ocultas `.gradle` y `.nb-gradle` en el directorio de tu computadora, y vuelve a abrir el IDE.
