@@ -692,8 +692,6 @@ Todos los paneles de módulo (`PanelInmuebles`, `PanelInquilinos`, `PanelAlquile
 
 ## 10. Explicación de las relaciones más importantes del diagrama UML
 
-*Sección actualizada a partir del diagrama UML final del proyecto (`InmobiliariaFinal.drawio`), que detalla con precisión las clases, multiplicidades y tipos de relación (herencia, agregación, asociación y dependencia) de todas las capas del sistema.*
-
 ### 10.1 Herencia: `Inmueble` ← `Piso`, `Local`, `Edificio`
 
 Es la relación de **generalización/especialización** central del modelo, representada en el diagrama con flechas de punta triangular hueca ("Extends") desde `Piso`, `Local` y `Edificio` hacia la clase abstracta `«Inmueble»`. La clase base concentra los atributos comunes (`id`, `direccion`, `descripcion`, `codigoPostal`, `precioAlquiler`, `disponible`, `inquilinoId`) y los métodos `getTipoInmueble()` y `toString()`, que cada subclase hereda y, en el caso de `toString()`, sobrescribe. Esta relación permite que el resto del sistema trate de forma polimórfica una colección `List<Inmueble>` sin conocer la subclase concreta de cada elemento.
