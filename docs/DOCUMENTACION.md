@@ -697,49 +697,54 @@ Es la relación de **generalización/especialización** central del modelo, repr
 
 ### 10.2 Agregación opcional: `Piso`/`Local` → `Edificio`
 
-El diagrama representa explícitamente, mediante una flecha de **agregación** (diamante hueco) con multiplicidad **1...\*** del lado de `Piso`/`Local` y **1** del lado de `Edificio`, que un edificio puede agrupar conceptualmente a varios pisos y locales, aunque la relación se materializa en el código mediante el atributo `edificioId: String` (referencia por identificador, no por objeto). Es una agregación y no una composición porque un `Piso` o `Local` puede existir de forma independiente, sin pertenecer a ningún `Edificio` registrado (la relación es opcional). El uso de IDs en lugar de referencias directas a objeto evita los problemas de serialización circular al persistir cada inmueble en el archivo `inmuebles.dat`.
+El diagrama representa explícitamente, mediante una flecha de **agregación** (diamante hueco en el extremo de `Edificio`) con multiplicidad **0...\*** del lado de `Piso`/`Local` y **1** del lado de `Edificio`, que un edificio puede agrupar conceptualmente a varios pisos y locales, aunque la relación se materializa en el código mediante el atributo `edificioId: String` (referencia por identificador, no por objeto). El **0** del lado de `Piso`/`Local` es coherente con que la relación es opcional: un `Piso` o `Local` puede existir de forma independiente, sin pertenecer a ningún `Edificio` registrado. El uso de IDs en lugar de referencias directas a objeto evita los problemas de serialización circular al persistir cada inmueble en el archivo `inmuebles.dat`.
 
-### 10.3 Asociación bidireccional `Inquilino` ↔ `Alquiler` e `Inmueble` ↔ `Alquiler`
+### 10.3 Asociación `Inquilino` — `Alquiler` e `Inmueble` — `Alquiler`
 
-El diagrama muestra dos asociaciones de tipo "muchos a muchos a lo largo del tiempo", ambas con extremos llenos (asociación fuerte) y multiplicidad **1...\*** en ambos lados:
-- **`Inquilino` ↔ `Alquiler`**: un inquilino puede tener muchos alquileres a lo largo del tiempo, y conceptualmente cada alquiler involucra inquilinos.
-- **`Inmueble` ↔ `Alquiler`**: un inmueble puede tener muchos alquileres en distintos períodos.
-  `Alquiler` actúa así como una **clase de asociación** (entidad de enlace) entre `Inmueble` e `Inquilino`, aunque en el código la relación se implementa mediante referencias por ID (`inquilinoId`, `inmuebleId`) en lugar de objetos directos, por las mismas razones de simplicidad de persistencia mencionadas en 4.2. La regla de negocio de que solo puede existir **un alquiler activo por inmueble en un momento dado** no se ve reflejada como multiplicidad en el diagrama (que modela la relación histórica completa), sino que es impuesta en tiempo de ejecución por `InmuebleServicio.alquilarInmueble()`.
+El diagrama muestra dos **asociaciones simples** (líneas sin flecha en ninguno de los dos extremos, sin diamante):
+- **`Inquilino` — `Alquiler`**: multiplicidad **1** del lado de `Inquilino` y **1...\*** del lado de `Alquiler` — un inquilino puede tener muchos alquileres a lo largo del tiempo.
+- **`Inmueble` — `Alquiler`**: multiplicidad **1** en ambos extremos tal como está dibujado en el diagrama.
+  `Alquiler` actúa así como una **clase de asociación** (entidad de enlace) entre `Inmueble` e `Inquilino`, aunque en el código la relación se implementa mediante referencias por ID (`inquilinoId`, `inmuebleId`) en lugar de objetos directos, por las mismas razones de simplicidad de persistencia mencionadas en 4.2. En la práctica, un mismo inmueble tiene múltiples `Alquiler` a lo largo del tiempo (uno por cada período en que fue arrendado) y la regla de negocio de que solo puede existir **un alquiler activo por inmueble en un momento dado** no se ve reflejada como multiplicidad en el diagrama, sino que es impuesta en tiempo de ejecución por `InmuebleServicio.alquilarInmueble()`.
 
-### 10.4 Agregación `MovimientosBancarios`/`Factura` → `Inmueble`
+### 10.4 Agregación `MovimientoBancario`/`Factura` → `Inmueble`
 
-El diagrama representa con flechas de **agregación** (diamante hueco) y multiplicidad **1...\*** las relaciones de `MovimientosBancarios` e `Factura` hacia `Inmueble`: muchos movimientos bancarios y muchas facturas pueden estar agregados a un mismo inmueble (representado con multiplicidad **1** del lado de `Inmueble`). En el código esta relación se traduce en el atributo `inmuebleId: String` de cada `Factura` y cada `MovimientoBancario`, y es la base de la trazabilidad financiera por propiedad (reportes de ingresos y gastos filtrados por inmueble y por período).
+El diagrama representa con flechas de **agregación** (diamante hueco en el extremo de `Inmueble`) y multiplicidad **1...\*** las relaciones de `MovimientoBancario` y `Factura` hacia `Inmueble`: muchos movimientos bancarios y muchas facturas pueden estar agregados a un mismo inmueble (representado con multiplicidad **1** del lado de `Inmueble`). En el código esta relación se traduce en el atributo `inmuebleId: String` de cada `Factura` y cada `MovimientoBancario`, y es la base de la trazabilidad financiera por propiedad (reportes de ingresos y gastos filtrados por inmueble y por período).
 
 ### 10.5 Dependencias hacia las enumeraciones (`«enumeration»`)
 
 El diagrama distingue claramente, mediante flechas discontinuas de **dependencia**, el uso que cada clase del modelo hace de sus enumeraciones internas:
 - `Factura` **depende de** `«enumeration» ConceptoFactura`.
 - `Inquilino` **depende de** `«enumeration» Sexo` y de `«enumeration» TipoRespaldo`.
-- `MovimientosBancarios` **depende de** `«enumeration» TipoMovimiento`.
+- `MovimientoBancario` **depende de** `«enumeration» TipoMovimiento`.
   Estas dependencias (en lugar de asociaciones) reflejan que las enumeraciones son tipos de valor inmutables usados como atributo, no entidades con identidad propia ni ciclo de vida independiente.
 
 ### 10.6 Relación `InmuebleServicio` ↔ `RepositorioDatos` ↔ `Inmueble`/`Inquilino`
 
-El diagrama muestra una **asociación** de extremos llenos entre `InmuebleServicio` y `RepositorioDatos` (el servicio mantiene una referencia `-repo: RepositorioDatos`, obtenida vía `getInstance()`), y dos relaciones de **agregación** (diamante hueco) desde `InmuebleServicio` hacia `Inmueble` y hacia `Inquilino`, reflejando que el servicio opera sobre colecciones de estas entidades sin ser su propietario exclusivo (la propiedad real de los datos reside en `RepositorioDatos`). Esta es la relación arquitectónica central de la capa de negocio: `InmuebleServicio` no accede a los archivos `.dat` directamente, sino siempre a través de `RepositorioDatos`, que a su vez es la única clase que conoce y manipula las colecciones de `Inmueble`, `Inquilino`, `Factura`, `MovimientoBancario` y `Alquiler`.
+El diagrama muestra tres relaciones distintas que conviene diferenciar con precisión:
+- **`InmuebleServicio` — `RepositorioDatos`**: **asociación simple** (línea sin flechas ni diamante), reflejo del atributo `-repo: RepositorioDatos` que el servicio obtiene vía `getInstance()`, con multiplicidad **1** en ambos extremos.
+- **`InmuebleServicio` ···> `Inmueble`**: flecha discontinua de **dependencia** (no agregación): el servicio recibe, procesa y devuelve objetos `Inmueble` en sus métodos (`registrarEdificio()`, `getTodosInmuebles()`, `buscarPorId()`, etc.) sin mantener una referencia permanente ni ser su propietario.
+- **`InmuebleServicio` ◇1 — 1...\* `Inquilino`**: flecha de **agregación** (diamante hueco del lado de `InmuebleServicio`), reflejando que el servicio opera sobre la colección completa de inquilinos.
 
-### 10.7 Composición `VentanaPrincipal` → Paneles (`PanelInmuebles`, `PanelInquilinos`, `PanelAlquileres`, `PanelFacturas`, `PanelMovimientos`)
+En cualquier caso, la propiedad real de los datos reside siempre en `RepositorioDatos`: esta es la relación arquitectónica central de la capa de negocio, ya que `InmuebleServicio` no accede a los archivos `.dat` directamente, sino siempre a través de `RepositorioDatos`, que a su vez es la única clase que conoce y manipula las colecciones de `Inmueble`, `Inquilino`, `Factura`, `MovimientoBancario` y `Alquiler`.
 
-El diagrama representa, mediante flechas de **agregación/composición** (diamante hueco) desde cada panel hacia `VentanaPrincipal`, el hecho de que la ventana principal contiene e integra los cinco paneles funcionales como pestañas de su `JTabbedPane`. Cada panel, a su vez, mantiene una **asociación de uso fuerte** (extremos llenos) con `InmuebleServicio` (todos declaran `-servicio: InmuebleServicio`), confirmando en el diagrama que **ninguna clase de la capa `vista` se conecta directamente con `RepositorioDatos`**: la única vía de acceso a los datos desde la interfaz gráfica es a través del servicio.
+### 10.7 Composición `VentanaPrincipal` ← Paneles e `InmuebleServicio`
+
+El diagrama representa, mediante flechas de **composición** (diamante **relleno**, no hueco) desde cada uno de los cinco paneles (`PanelInmuebles`, `PanelInquilinos`, `PanelAlquileres`, `PanelFacturas`, `PanelMovimientos`) hacia `VentanaPrincipal`, el hecho de que la ventana principal contiene e integra estos paneles como pestañas de su `JTabbedPane`, y que su ciclo de vida depende exclusivamente de `VentanaPrincipal`. El diagrama incluye además una sexta flecha de composición, no siempre evidente a primera vista, entre `InmuebleServicio` y `VentanaPrincipal` (también con diamante relleno): la ventana principal es igualmente responsable de crear y poseer la única instancia de `InmuebleServicio` que luego comparte con cada panel. Cada panel, a su vez, se conecta mediante una **línea de asociación simple** (sin flechas) con `InmuebleServicio` (todos declaran `-servicio: InmuebleServicio`), confirmando en el diagrama que **ninguna clase de la capa `vista` se conecta directamente con `RepositorioDatos`**: la única vía de acceso a los datos desde la interfaz gráfica es a través del servicio.
 
 ### 10.8 Dependencias de la capa `vista` hacia el modelo y hacia `Validador`
 
 El diagrama detalla, mediante flechas discontinuas de dependencia, qué clases concretas del modelo utiliza cada panel y diálogo, lo que documenta con precisión el acoplamiento real de la interfaz:
 - `DialogoInmueble` depende de `Edificio`, `Piso`, `Local` (para construir y precargar el formulario dinámico) y de `Validador`.
-- `PanelInmuebles` depende de `Edificio` y de `DialogoInmueble` (lo invoca para alta/edición).
+- `PanelInmuebles` depende de `Inmueble` y de `DialogoInmueble` (lo invoca para alta/edición).
 - `PanelInquilinos` depende de `Inquilino` y de `Validador`.
 - `PanelAlquileres` depende de `Inmueble`, `Inquilino` y `Alquiler`.
 - `PanelFacturas` depende de `Factura`, `Inmueble` y `Validador`.
-- `PanelMovimientos` depende de `MovimientosBancarios`, `Inmueble` y `Validador`.
+- `PanelMovimientos` depende de `MovimientoBancario`, `Inmueble` y `Validador`.
   Esta es la confirmación gráfica de que `Validador` es efectivamente **reutilizado por múltiples paneles** (Inquilinos, Alquileres/Facturas/Movimientos), evitando duplicar las reglas de validación de formato en cada formulario.
 
-### 10.9 Jerarquía de componentes Swing (`vista` → `JFrame`)
+### 10.9 Jerarquía de componentes Swing (no representada en este diagrama)
 
-El diagrama agrupa, mediante flechas "Extends", a `VentanaPrincipal`, `SwingUtil`, `DialogoInmueble` y los cinco paneles como parte de la jerarquía de componentes Swing del sistema (simplificada en el diagrama bajo un nodo común `JFrame`, aunque en el código cada uno extiende la clase Swing que le corresponde realmente: `VentanaPrincipal extends JFrame`, `DialogoInmueble extends JDialog`, y los paneles `extends JPanel`). Lo relevante de esta agrupación es que deja explícito que toda la capa `vista` depende del framework Swing, mientras que las capas `modelo`, `repositorio` y `servicio` son completamente independientes de la tecnología de interfaz gráfica utilizada.
+A diferencia de lo indicado en versiones anteriores de esta documentación, el diagrama UML **no incluye** nodos `JFrame`, `JPanel` ni `JDialog`, ni flechas de herencia ("Extends") entre la capa `vista` y clases de Swing: las 22 clases/enumeraciones del diagrama son exclusivamente las propias del proyecto (`modelo`, `repositorio`, `servicio`, `util` y `vista`). La relación de herencia con el framework existe únicamente en el código fuente, no en el diagrama: `VentanaPrincipal extends JFrame`, `DialogoInmueble extends JDialog`, y cada uno de los cinco paneles `extends JPanel`. Vale la pena mencionarlo igualmente porque dichas superclases son las responsables de todo el comportamiento gráfico (renderizado, eventos, ciclo de vida de la ventana) que la capa `vista` utiliza, mientras que las capas `modelo`, `repositorio` y `servicio` son completamente independientes de Swing.
 
 ### 10.10 Patrón Singleton aplicado a `RepositorioDatos`
 
